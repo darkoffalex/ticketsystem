@@ -2,7 +2,7 @@
 
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
-/* @var $model app\models\ContactForm */
+/* @var $model app\models\Ticket */
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
@@ -10,16 +10,15 @@ use yii\captcha\Captcha;
 use app\helpers\Constants;
 use yii\helpers\Url;
 
-$this->title = $model->getSubject();
+$this->title = 'Жалоба';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-
 <div class="site-contact" style="max-width: 500px; margin: 0 auto;">
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?php if(Yii::$app->session->hasFlash('contactFormSubmitted')): ?>
         <div class="alert alert-success">
-            Сообщение отправлено
+            Жалоба отправлена
         </div>
     <?php else: ?>
         <div class="row">
@@ -35,30 +34,31 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ]); ?>
 
-                <?= $form->field($model, 'name')->textInput(['autofocus' => true]) ?>
+                <?= $form->field($model, 'author_name')->textInput(['autofocus' => true]) ?>
                 <?= $form->field($model, 'phone_or_email'); ?>
 
                 <hr>
                 <div class="row">
                     <div class="col-lg-3">
-                        <a class="btn btn-default <?= Yii::$app->controller->action->id == 'complaint' ? 'active' : ''; ?>" href="<?= Url::to(['/complaint']); ?>">Жалоба</a>
+                        <a class="btn btn-default active" href="<?= Url::to(['/complaint']); ?>">Жалоба</a>
                     </div>
                     <div class="col-lg-3 text-center">
-                        <a class="btn btn-default <?= $model->type == Constants::EMAIL_TYPE_OFFER ? 'active' : ''; ?>" href="<?= Url::to(['/offer']); ?>">Предложение</a>
+                        <a class="btn btn-default" href="<?= Url::to(['/offer']); ?>">Предложение</a>
                     </div>
                     <div class="col-lg-3 text-center">
-                        <a class="btn btn-default <?= $model->type == Constants::EMAIL_TYPE_COMMENT ? 'active' : ''; ?>" href="<?= Url::to(['/comment']); ?>">Отзыв</a>
+                        <a class="btn btn-default" href="<?= Url::to(['/comment']); ?>">Отзыв</a>
                     </div>
                     <div class="col-lg-3">
-                        <a class="btn btn-default pull-right <?= $model->type == Constants::EMAIl_TYPE_QUESTION ? 'active' : ''; ?>" href="<?= Url::to(['/question']); ?>">Вопрос</a>
+                        <a class="btn btn-default pull-right" href="<?= Url::to(['/question']); ?>">Вопрос</a>
                     </div>
                 </div>
                 <hr>
 
-                <?= $form->field($model, 'message')->textarea(); ?>
+                <?= $form->field($model, 'link')->textInput()->label('Ссылка на файл/комментарий с нарушением <a data-target=".modal" data-toggle="modal" href="'.Url::to(['/site/where-to-get']).'">(где взять?)</a>'); ?>
+                <?= $form->field($model, 'text')->textarea(); ?>
 
                 <hr>
-                <label>Файлы:</label>
+                <label>Скринщоты:</label>
 
                 <div class="file-inputs">
                     <?= $form->field($model, 'files[0]')->fileInput()->label(false)->error(false); ?>
@@ -85,11 +85,10 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <script type="text/javascript">
-
     $(document).ready(function(){
         $('.add-more-files').click(function(){
             var count = $('.file-inputs input[type=file]').length;
-            var blockHtml = '<div class="form-group field-contactform-files-'+count+'"><input name="ContactForm[files]['+count+']" value="" type="hidden"><input id="contactform-files-'+count+'" name="ContactForm[files]['+count+']" type="file"></div>';
+            var blockHtml = '<div class="form-group field-ticket-files-'+count+'"><input name="Ticket[files]['+count+']" value="" type="hidden"><input id="ticket-files-'+count+'" name="Ticket[files]['+count+']" type="file"></div>';
             $('.file-inputs').append(blockHtml);
 
             if(count > 3){
@@ -99,8 +98,4 @@ $this->params['breadcrumbs'][] = $this->title;
             return false;
         });
     });
-
-//    $(document).ready(function(){
-//        $('input[type=file]').bootstrapFileInput();
-//    });
 </script>

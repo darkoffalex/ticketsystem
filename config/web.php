@@ -6,7 +6,7 @@ $config = [
     'id' => 'Тикет Система',
     'name' => 'Тикет Система',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log','devicedetect'],
     'language' => 'ru',
 
     'modules' => [
@@ -15,6 +15,9 @@ $config = [
     ],
 
     'components' => [
+        'devicedetect' => [
+            'class' => 'alexandernst\devicedetect\DeviceDetect'
+        ],
 
         'assetManager' => [
             'bundles' => [

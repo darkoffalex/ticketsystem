@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\helpers\Constants;
 use app\helpers\Help;
 use app\models\ContactForm;
+use app\models\Ticket;
 use Yii;
 use app\components\Controller;
 use yii\web\UploadedFile;
@@ -32,13 +33,51 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
+    /**
+     * Feedback - complaint (create ticket)
+     * @return string
+     */
     public function actionComplaint()
     {
-        return $this->render('feedback_ticket');
+        $model = new Ticket();
+
+        if($model->load(Yii::$app->request->post())){
+            $model->files = UploadedFile::getInstances($model,'files');
+            if($model->validate()){
+                $model->created_at = date('Y-m-d H:i:s',time());
+                $model->updated_at = date('Y-m-d H:i:s',time());
+                $model->status_id = Constants::STATUS_NEW;
+                $model->appendToLog('Создан тикет');
+                $saved = $model->save();
+
+                if($saved){
+                    $model->createFilesFromUploaded();
+                }
+
+                Yii::$app->session->setFlash('contactFormSubmitted',true);
+            }
+        }
+
+        return $this->render('feedback_ticket',compact('model'));
     }
 
     /**
-     * Feedback - offer
+     * Where to get modal window (depending on browser)
+     * @return string
+     */
+    public function actionWhereToGet()
+    {
+        $device = Yii::getAlias('@device');
+
+        if($device == 'mobile'){
+            return $this->renderPartial('_where_to_get_mobile');
+        }
+
+        return $this->renderPartial('_where_to_get_desktop');
+    }
+
+    /**
+     * Feedback - offer (send email)
      * @return string
      */
     public function actionOffer()
@@ -49,6 +88,10 @@ class SiteController extends Controller
         return $this->render('feedback_email',compact('model'));
     }
 
+    /**
+     * Feedback - comment (send email)
+     * @return string
+     */
     public function actionComment()
     {
         $model = new ContactForm();
@@ -57,6 +100,10 @@ class SiteController extends Controller
         return $this->render('feedback_email',compact('model'));
     }
 
+    /**
+     * Feedback - question (send email)
+     * @return string
+     */
     public function actionQuestion()
     {
         $model = new ContactForm();
@@ -66,7 +113,7 @@ class SiteController extends Controller
     }
 
     /**
-     * Processing email form submit action
+     * Processing email - form submit action
      * @param $model
      */
     public function commonEmailProcessing($model)

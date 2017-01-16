@@ -37,6 +37,19 @@ AppAsset::register($this);
     </div>
 </footer>
 
+<div class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('.modal').on('hide.bs.modal', function() {
+        $(this).removeData();
+    });
+</script>
+
 <?php $this->endBody() ?>
 </body>
 </html>

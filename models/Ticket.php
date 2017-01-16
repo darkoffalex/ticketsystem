@@ -2,7 +2,9 @@
 
 namespace app\models;
 
+use app\helpers\Help;
 use Yii;
+use yii\base\Exception;
 use yii\web\UploadedFile;
 
 /**
@@ -53,6 +55,10 @@ class Ticket extends \yii\db\ActiveRecord
             [['created_at', 'updated_at'], 'safe'],
             [['author_name','phone_or_email'], 'string', 'max' => 255],
             [['performer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['performer_id' => 'id']],
+
+            [['link'],'url'],
+            [['phone_or_email', 'text', 'author_name'], 'required', 'message' => 'Поле обязательно для заполнения'],
+            [['files'], 'each', 'rule' => ['file', 'extensions' => ['png', 'jpg', 'gif'], 'maxSize' => 1024*1024]]
         ];
     }
 
@@ -70,7 +76,7 @@ class Ticket extends \yii\db\ActiveRecord
             'author_name' => 'Имя',
             'phone_or_email' => 'Телефон и/или email',
             'text' => 'Сообщение',
-            'link' => 'Ссылка пользователя',
+            'link' => 'Ссылка',
             'log' => 'Лог',
             'created_at' => 'Создан',
             'updated_at' => 'Обновлен',
@@ -101,5 +107,48 @@ class Ticket extends \yii\db\ActiveRecord
     public function getTicketImages()
     {
         return $this->hasMany(TicketImage::className(), ['ticket_id' => 'id']);
+    }
+
+    /**
+     * Appends message to log with current date
+     * @param $message
+     */
+    public function appendToLog($message)
+    {
+        $log = json_decode($this->log,true);
+        $log[date('Y.m.d, H:i', time())] = $message;
+        $this->log = json_encode($log);
+    }
+
+    /**
+     * Uploads attached files and creates file-items in database
+     */
+    public function createFilesFromUploaded()
+    {
+        if(!empty($this->files)){
+            foreach($this->files as $file){
+                if($file->size > 0){
+                    try{
+                        $name = Yii::$app->security->generateRandomString(16).'.'.$file->extension;
+                        if($file->saveAs(Yii::getAlias('@webroot/uploads/img/'.$name))){
+                            $img = new TicketImage();
+                            $img->created_at = date('Y-m-d H:i:s',time());
+                            $img->updated_at = date('Y-m-d H:i:s',time());
+                            $img->created_by_id = $this->created_by_id;
+                            $img->updated_by_id = $this->updated_by_id;
+                            $img->ticket_id = $this->id;
+                            $img->file = null;
+                            $img->filename = $name;
+                            $img->original_filename = $file->name;
+                            $img->name = $file->name;
+                            $img->mime_type = $file->type;
+                            $img->save();
+                        }
+                    }catch (Exception $ex){
+                        Help::log('uploads.log',$ex->getMessage());
+                    }
+                }
+            }
+        }
     }
 }
