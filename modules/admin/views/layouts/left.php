@@ -6,6 +6,8 @@
 
     <section class="sidebar">
 
+        <?php $c = Yii::$app->controller->id; ?>
+        <?php $a = Yii::$app->controller->action->id; ?>
 
         <?= dmstr\widgets\Menu::widget(
             [
@@ -28,6 +30,22 @@
 //                            ]
 //                        ]
 //                    ],
+
+                    [
+                        'label' => 'Пользователи',
+                        'icon' => 'fa fa-users',
+                        'active' => $c == 'users',
+                        'visible' => $user->role_id == \app\helpers\Constants::ROLE_ADMIN,
+                        'url' => ['/admin/users/index'],
+                    ],
+
+                    [
+                        'label' => 'Тикеты',
+                        'icon' => 'fa fa-ticket',
+                        'active' => $c == 'tickets',
+                        'visible' => true,
+                        'url' => ['/admin/tickets/index'],
+                    ],
 
                     [
                         'label' => 'Выход',

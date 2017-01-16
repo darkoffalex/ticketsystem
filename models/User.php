@@ -135,7 +135,8 @@ class User extends UserDB implements IdentityInterface
         $baseLabels = parent::attributeLabels();
         $baseLabels['username'] = 'Логин';
         $baseLabels['name'] = 'Имя';
-        $baseLabels['username'] = 'Фамилия';
+        $baseLabels['surname'] = 'Фамилия';
+        $baseLabels['created_at'] = 'Зарегистрирован';
         $baseLabels['email'] = 'Email';
         $baseLabels['status_id'] = 'Состояние';
         $baseLabels['role_id'] = 'Роль';

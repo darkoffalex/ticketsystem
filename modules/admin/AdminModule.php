@@ -2,6 +2,8 @@
 
 namespace app\modules\admin;
 
+use app\helpers\Constants;
+use app\models\User;
 use Yii;
 use yii\helpers\Url;
 
@@ -37,8 +39,20 @@ class AdminModule extends \yii\base\Module
             return false;
         }
 
+
+
         if(Yii::$app->user->isGuest && $action->id != 'login'){
             Yii::$app->response->redirect(Url::to(['/admin/main/login']));
+            return false;
+        }
+
+        /* @var $user User */
+        $user = Yii::$app->user->identity;
+        if($user->role_id == Constants::ROLE_NEW && $action->id != 'new-user'){
+            Yii::$app->response->redirect(Url::to(['/admin/main/new-user']));
+            return false;
+        }elseif($user->role_id == Constants::ROLE_REDACTOR && $action->id == 'users'){
+            Yii::$app->response->redirect(Url::to(['/admin/tickets/index']));
             return false;
         }
 

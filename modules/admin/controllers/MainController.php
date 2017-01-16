@@ -2,6 +2,7 @@
 
 namespace app\modules\admin\controllers;
 
+use app\helpers\Constants;
 use Yii;
 use yii\helpers\Url;
 use app\models\User;
@@ -14,16 +15,25 @@ use yii\web\Controller;
 class MainController extends Controller
 {
     /**
-     * Renders the index view for the module
+     * Entry point hub-action (redirect depending on role)
      * @return string
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        /* @var $user User */
+        $user = Yii::$app->user->identity;
+
+        if($user->role_id == Constants::ROLE_ADMIN){
+            return $this->redirect(Url::to(['/admin/users/index']));
+        }elseif($user->role_id == Constants::ROLE_REDACTOR){
+            return $this->redirect(Url::to(['/admin/tickets/index']));
+        }
+
+        return $this->redirect(Url::to(['/admin/main/new-user']));
     }
 
     /**
-     * Логин админ-пользователя при помощи формы
+     * Login admin-user
      * @return string
      */
     public function actionLogin()
@@ -46,12 +56,23 @@ class MainController extends Controller
     }
 
     /**
-     * Логаут
+     * Logout
      * @return \yii\web\Response
      */
     public function actionLogout()
     {
         Yii::$app->user->logout();
         return $this->redirect(Url::to(['/admin/main/login']));
+    }
+
+    /**
+     * Show this for new user
+     * @return string
+     */
+    public function actionNewUser()
+    {
+        $this->layout = 'main-login';
+        $this->view->title = "Ваша заявка на рассмотрении";
+        return $this->render('new-user', compact('model'));
     }
 }
