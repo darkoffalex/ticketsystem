@@ -8,7 +8,7 @@ use app\helpers\Help;
 use kartik\select2\Select2;
 use yii\web\JsExpression;
 
-/* @var $searchModel \app\models\UserSearch */
+/* @var $searchModel \app\models\TicketSearch */
 /* @var $dataProvider \yii\data\ActiveDataProvider */
 /* @var $this \yii\web\View */
 /* @var $controller \app\modules\admin\controllers\UsersController */
@@ -25,7 +25,10 @@ $gridColumns = [
     [
         'attribute' => 'text',
         'format' => 'raw',
-        'contentOptions'=>['colspan' => '5'],
+        'contentOptions'=>  function ($model, $key, $index, $column) use ($view){
+            /* @var $model \app\models\Ticket */
+            return ['colspan' => '5', 'id' => 'ticket-item-'.$model->id, 'data-reload-url' => Url::to(['/admin/tickets/ticket-ajax-refresh', 'id' => $model->id])];
+        },
         'value' => function ($model, $key, $index, $column) use ($view){
             /* @var $model \app\models\Ticket */
             return $view->render('_ticket_item',compact('model'));
@@ -47,7 +50,7 @@ $gridColumns = [
         'filter' => Select2::widget([
             'model' => $searchModel,
             'attribute' => 'performer_id',
-            'initValueText' => !empty($searchModel->author) ? $searchModel->author->name.' '.$searchModel->author->surname : '',
+            'initValueText' => !empty($searchModel->performer) ? $searchModel->performer->name.' '.$searchModel->performer->surname : '',
             'options' => ['placeholder' => 'Найти пользователя'],
             'language' => Yii::$app->language,
             'theme' => Select2::THEME_DEFAULT,
@@ -105,6 +108,7 @@ $gridColumns = [
         'filter' => [
             Constants::STATUS_NEW => 'Новый',
             Constants::STATUS_IN_PROGRESS => 'В работе',
+            Constants::STATUS_DONE => 'Отработан',
         ],
         'enableSorting' => false,
         'format' => 'raw',
@@ -153,9 +157,11 @@ $gridColumns = [
                     'pjax' => false,
                 ]); ?>
             </div>
-            <div class="box-footer">
-                <a href="<?php echo Url::to(['/admin/users/create']); ?>" class="btn btn-primary">Создать</a>
-            </div>
+            <?php if($user->role_id == Constants::ROLE_ADMIN): ?>
+                <div class="box-footer">
+                    <a href="<?php echo Url::to(['/admin/tickets/create']); ?>" class="btn btn-primary">Создать</a>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>

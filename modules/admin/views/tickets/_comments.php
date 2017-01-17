@@ -4,7 +4,6 @@ use yii\bootstrap\ActiveForm;
 use yii\helpers\Url;
 use app\helpers\Constants;
 use yii\helpers\ArrayHelper;
-use app\models\Category;
 
 /* @var $model \app\models\Ticket */
 /* @var $this \yii\web\View */

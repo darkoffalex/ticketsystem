@@ -9,7 +9,7 @@ use yii\helpers\StringHelper;
 use branchonline\lightbox\Lightbox;
 
 /* @var $model \app\models\Ticket */
-/* @var $user \yii\web\User */
+/* @var $user \app\models\User */
 /* @var $this \yii\web\View */
 
 $user = Yii::$app->user->identity;
@@ -26,20 +26,35 @@ $user = Yii::$app->user->identity;
                 <?php if($model->status_id == Constants::STATUS_NEW): ?>
                     <span class="label label-danger">Новый</span>
                 <?php elseif($model->status_id == Constants::STATUS_IN_PROGRESS): ?>
-                    <span class="label label-warning">В работе</span>
+                    <?php if($user->role_id == Constants::ROLE_ADMIN || $model->performer->id == $user->id): ?>
+                        <a title='Отметить как "Отработан"' data-ajax-reload="#ticket-item-<?= $model->id; ?>" href="<?= Url::to(['/admin/tickets/status','id' => $model->id, 'status' => Constants::STATUS_DONE]); ?>" class="label label-warning">В работе</a>
+                    <?php else: ?>
+                        <span class="label label-warning">В работе</span>
+                    <?php endif ?>
                 <?php elseif($model->status_id == Constants::STATUS_DONE): ?>
-                    <span class="label label-success">Отработан</span>
+                    <?php if($user->role_id == Constants::ROLE_ADMIN || $model->performer->id == $user->id): ?>
+                        <a data-ajax-reload="#ticket-item-<?= $model->id; ?>" href="<?= Url::to(['/admin/tickets/status', 'id' => $model->id, 'status' => Constants::STATUS_IN_PROGRESS]); ?>" class="label label-success">Отработан</a>
+                    <?php else: ?>
+                        <span class="label label-success">Отработан</span>
+                    <?php endif ?>
                 <?php endif; ?>
-                &nbsp;|&nbsp;Отрабатывается : <?= !empty($model->performer) ? $model->performer->name.' '.$model->performer->surname : '(нет)'; ?>
+                &nbsp;|&nbsp;<?= $model->status_id == Constants::STATUS_IN_PROGRESS ? 'Отрабатывается' : 'Исполнитель'; ?> : <?= !empty($model->performer) ? $model->performer->name.' '.$model->performer->surname : '(нет)'; ?>
                 <?php if(empty($model->performer)): ?>
                     <a href="<?= Url::to(['/admin/tickets/take', 'id' => $model->id]); ?>" class="btn btn-primary btn-xs">Взять в обработку</a>
+                <?php endif; ?>
+                &nbsp;|&nbsp;
+                <?php if($user->role_id == Constants::ROLE_ADMIN): ?>
+                    <a data-target=".modal" data-toggle="modal" href="<?= Url::to(['/admin/tickets/change-performer', 'id' => $model->id]); ?>" class="btn btn-primary btn-xs">Назначить исполнителя</a>
+                    <a data-confirm="Удалить тикет навсегда ?" href="<?= Url::to(['/admin/tickets/delete', 'id' => $model->id]); ?>" class="btn btn-primary btn-xs">Удалить</a>
                 <?php endif; ?>
             </h3>
 
 
             <div class="timeline-body">
                 <p><strong>Текст сообщения:</strong> <?= StringHelper::truncateWords($model->text,10); ?> &nbsp; <a class="text-sm" data-toggle="modal" data-target=".modal" href="<?= Url::to(['/admin/tickets/full-text', 'id' => $model->id]); ?>">(читать полностью)</a></p>
-                <p><strong>Ссылка пользователя: <?= Html::a($model->link,$model->link,['target' => '_blank']); ?></strong></p>
+                <?php if(!empty($model->link)): ?>
+                    <p><strong>Ссылка пользователя: <?= Html::a($model->link,$model->link,['target' => '_blank']); ?></strong></p>
+                <?php endif; ?>
                 <hr>
                 <div class="row">
                     <div class="col-md-7">
@@ -76,7 +91,7 @@ $user = Yii::$app->user->identity;
             <div class="timeline-footer">
                 <hr>
                 <h4>Лог тикета:</h4>
-                <p><?= $model->getLogAsString("<br>",5); ?></p>
+                <p><?= $model->getLogAsString("<br>",3); ?></p>
                 <a href="<?= Url::to(['/admin/tickets/full-log', 'id' => $model->id]); ?>" data-target=".modal" data-toggle="modal" class="btn btn-primary btn-xs">Смотреть весь лог</a>
             </div>
         </div>

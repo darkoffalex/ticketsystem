@@ -10,9 +10,11 @@ use app\models\User;
 use Yii;
 use yii\base\Model;
 use yii\bootstrap\ActiveForm;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
+use yii\web\UploadedFile;
 
 
 class TicketsController extends Controller
@@ -123,12 +125,6 @@ class TicketsController extends Controller
 
         $model = new TicketComment();
 
-        //ajax validation
-        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
-            Yii::$app->response->format = Response::FORMAT_JSON;
-            return ActiveForm::validate($model);
-        }
-
         //if loaded and validated
         if($model->load(Yii::$app->request->post()) && $model->validate()){
             $model->author_id = Yii::$app->user->id;
@@ -140,16 +136,190 @@ class TicketsController extends Controller
             $ok = $model->save();
 
             if($ok){
-                $ticket->appendToLog('Пользвоатель - '.$model->author->name.' '.$model->author->surname.' добавил комментарий');
+                $ticket->appendToLog($model->author->name.' '.$model->author->surname.' добавил комментарий');
                 $model->updated_by_id = Yii::$app->user->id;
                 $model->updated_at = date('Y-m-d H:i:s',time());
                 $ticket->update();
             }
 
-            return $this->redirect(Yii::$app->request->referrer);
+            return 'OK';
         }
 
         return $this->renderAjax('_add_comment',compact('ticket','model'));
+    }
+
+    /**
+     * Change status
+     * @param $id
+     * @param $status
+     * @return string|Response
+     * @throws NotFoundHttpException
+     * @throws \Exception
+     */
+    public function actionStatus($id, $status)
+    {
+        $model = Ticket::findOne((int)$id);
+
+        $statuses = [
+            Constants::STATUS_DONE => 'Отработан',
+            Constants::STATUS_IN_PROGRESS => 'В работе',
+            Constants::STATUS_NEW => 'Новый',
+        ];
+
+        /* @var $user User */
+        $user = Yii::$app->user->identity;
+
+        if(empty($model) || !array_key_exists($status,$statuses) || ($user->role_id != Constants::ROLE_ADMIN  && $model->performer_id != $user->id)){
+            throw new NotFoundHttpException('Not found', 404);
+        }
+
+        $model->status_id = $status;
+        $model->updated_at = date('Y-m-d H:i:s', time());
+        $model->appendToLog($user->name.' '.$user->surname.' сменил статус на "'.$statuses[$status].'"');
+        $model->update();
+
+        if(Yii::$app->request->isAjax){
+            return $this->actionTicketAjaxRefresh($model->id);
+        }
+
+        return $this->redirect(Yii::$app->request->referrer);
+    }
+
+    /**
+     * Render ticket-item block (used for ajax updating)
+     * @param $id
+     * @return string
+     * @throws NotFoundHttpException
+     */
+    public function actionTicketAjaxRefresh($id)
+    {
+        $model = Ticket::findOne((int)$id);
+
+        if(empty($model)){
+            throw new NotFoundHttpException('Not found', 404);
+        }
+
+        return $this->renderAjax('_ticket_item',compact('model'));
+    }
+
+    /**
+     * Change ticket's performer
+     * @param $id
+     * @return string
+     * @throws NotFoundHttpException
+     * @throws \Exception
+     */
+    public function actionChangePerformer($id)
+    {
+        $model = Ticket::findOne((int)$id);
+
+        /* @var $user User */
+        $user = Yii::$app->user->identity;
+
+        if(empty($model) || $user->role_id != Constants::ROLE_ADMIN){
+            throw new NotFoundHttpException('Not found', 404);
+        }
+
+        $oldPerformerId = $model->performer_id;
+        $oldStatus = $model->status_id;
+
+        if($model->load(Yii::$app->request->post())){
+            if($model->validate()){
+                $model->update();
+                $model->refresh();
+
+                if($oldPerformerId != $model->performer->id){
+                    if(!empty($model->performer)){
+                        if($oldStatus == Constants::STATUS_DONE || $oldStatus == Constants::STATUS_NEW){
+                            $model->status_id = Constants::STATUS_IN_PROGRESS;
+                        }
+                        $model->appendToLog($user->name.' '.$user->surname.' дилегировал тикет '.$model->performer->name.' '.$model->performer->surname);
+                    }
+                    else{
+                        $model->status_id = Constants::STATUS_NEW;
+                        $model->appendToLog($user->name.' '.$user->surname.' обнулил исполнителя');
+                    }
+                    $model->update();
+                }
+
+                return 'OK';
+            }
+        }
+
+        return $this->renderAjax('_change_performer',compact('model'));
+    }
+
+    /**
+     * Create ticket
+     * @return string
+     * @throws NotFoundHttpException
+     * @throws \Exception
+     */
+    public function actionCreate()
+    {
+
+        $model = new Ticket();
+
+        /* @var $user User */
+        $user = Yii::$app->user->identity;
+
+        if($user->role_id != Constants::ROLE_ADMIN){
+            throw new NotFoundHttpException('Not found', 404);
+        }
+
+        if($model->load(Yii::$app->request->post())){
+            $model->files = UploadedFile::getInstances($model,'files');
+            if($model->validate()){
+                $model->created_at = date('Y-m-d H:i:s',time());
+                $model->updated_at = date('Y-m-d H:i:s',time());
+                $model->created_by_id = Yii::$app->user->id;
+                $model->updated_by_id = Yii::$app->user->id;
+                $model->status_id = Constants::STATUS_NEW;
+                $model->appendToLog('Создан тикет');
+                $saved = $model->save();
+
+                if($saved){
+                    $model->createFilesFromUploaded();
+
+                    if(!empty($model->performer)){
+                        $model->status_id = Constants::STATUS_IN_PROGRESS;
+                        $model->appendToLog($user->name.' '.$user->surname.' создал тикет для '.$model->performer->name.' '.$model->performer->surname);
+                        $model->files = null;
+                        $model->update();
+                    }
+                }
+
+                Yii::$app->session->setFlash('contactFormSubmitted',true);
+            }
+        }
+
+        return $this->render('edit',compact('model'));
+    }
+
+    /**
+     * Delete ticket
+     * @param $id
+     * @return Response
+     * @throws NotFoundHttpException
+     * @throws \Exception
+     */
+    public function actionDelete($id)
+    {
+        $model = Ticket::findOne((int)$id);
+
+        /* @var $user User */
+        $user = Yii::$app->user->identity;
+
+        if(empty($model) || $user->role_id != Constants::ROLE_ADMIN){
+            throw new NotFoundHttpException('Not found', 404);
+        }
+
+        foreach($model->ticketImages as $image){
+            $image->deleteFile();
+        }
+        $model->delete();
+
+        return $this->redirect(Yii::$app->request->referrer);
     }
 
     /**

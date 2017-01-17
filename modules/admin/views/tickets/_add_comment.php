@@ -4,7 +4,6 @@ use yii\bootstrap\ActiveForm;
 use yii\helpers\Url;
 use app\helpers\Constants;
 use yii\helpers\ArrayHelper;
-use app\models\Category;
 
 /* @var $ticket \app\models\Ticket */
 /* @var $model \app\models\TicketComment */
@@ -22,7 +21,7 @@ $controller = $this->context;
     'id' => 'create-comment-form',
     'options' => ['role' => 'form', 'method' => 'post', 'enctype' => 'multipart/form-data'],
     'enableClientValidation' => false,
-    'enableAjaxValidation' => true,
+    'enableAjaxValidation' => false,
     'fieldConfig' => [
         'template' => "{label}\n{input}\n{error}\n",
         //'labelOptions' => ['class' => 'col-lg-1 control-label'],
@@ -34,7 +33,7 @@ $controller = $this->context;
 
 <div class="modal-footer">
     <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Закрыть</button>
-    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <button type="button" data-ajax-form="#create-comment-form" data-ok-reload="#ticket-item-<?= $ticket->id; ?>" class="btn btn-primary">Сохранить</button>
 </div>
 
 <?php ActiveForm::end(); ?>
