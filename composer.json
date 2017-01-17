@@ -30,7 +30,9 @@
         "kartik-v/yii2-widget-activeform": "^1.4",
         "kartik-v/yii2-widget-datepicker": "^1.4",
         "dmstr/yii2-adminlte-asset": "^2.3",
-        "alexandernst/yii2-device-detect": "^0.0.11"
+        "alexandernst/yii2-device-detect": "^0.0.11",
+        "branchonline/yii2-lightbox": "^1.2",
+        "himiklab/yii2-easy-thumbnail-image-helper": "^1.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

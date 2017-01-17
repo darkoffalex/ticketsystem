@@ -58,7 +58,7 @@ class Ticket extends \yii\db\ActiveRecord
 
             [['link'],'url'],
             [['phone_or_email', 'text', 'author_name'], 'required', 'message' => 'Поле обязательно для заполнения'],
-            [['files'], 'each', 'rule' => ['file', 'extensions' => ['png', 'jpg', 'gif'], 'maxSize' => 1024*1024]]
+            [['files'], 'each', 'rule' => ['file', 'extensions' => ['png', 'jpg', 'gif'], 'maxSize' => 1024*1024*2]]
         ];
     }
 
@@ -98,7 +98,7 @@ class Ticket extends \yii\db\ActiveRecord
      */
     public function getTicketComments()
     {
-        return $this->hasMany(TicketComment::className(), ['ticket_id' => 'id']);
+        return $this->hasMany(TicketComment::className(), ['ticket_id' => 'id'])->orderBy('created_at ASC');
     }
 
     /**
@@ -118,6 +118,29 @@ class Ticket extends \yii\db\ActiveRecord
         $log = json_decode($this->log,true);
         $log[date('Y.m.d, H:i', time())] = $message;
         $this->log = json_encode($log);
+    }
+
+    /**
+     * Returns log as string
+     * @param string $separator
+     * @param null $length
+     * @return string
+     */
+    public function getLogAsString($separator = "\n",$length = null)
+    {
+        $logStr = "";
+        $log = json_decode($this->log,true);
+        $log = array_reverse($log);
+
+        if(!empty($length)){
+            $log = array_slice($log,0,$length,true);
+        }
+
+        foreach($log as $date => $action){
+            $logStr .= $date.' - '.$action.$separator;
+        }
+
+        return $logStr;
     }
 
     /**
@@ -150,5 +173,29 @@ class Ticket extends \yii\db\ActiveRecord
                 }
             }
         }
+    }
+
+    /**
+     * Returns array for using in lightbox widget
+     * @return array
+     */
+    public function getImageFilesData()
+    {
+        $result = [];
+
+        if(!empty($this->ticketImages)){
+            foreach($this->ticketImages as $image){
+                if($image->hasFile()){
+                    $result[] = [
+                        'thumb' => $image->getThumbnailUrl(),
+                        'original' => $image->getFullUrl(),
+                        'title' => $image->name,
+                        'thumbOptions' => ['class' => 'img-thumbnail']
+                    ];
+                }
+            }
+        }
+
+        return $result;
     }
 }

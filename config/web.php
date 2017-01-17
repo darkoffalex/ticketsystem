@@ -6,7 +6,7 @@ $config = [
     'id' => 'Тикет Система',
     'name' => 'Тикет Система',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log','devicedetect'],
+    'bootstrap' => ['log','devicedetect','thumbnail'],
     'language' => 'ru',
 
     'modules' => [
@@ -15,6 +15,11 @@ $config = [
     ],
 
     'components' => [
+        'thumbnail' => [
+            'class' => 'himiklab\thumbnail\EasyThumbnail',
+            'cacheAlias' => 'assets/thumbnails',
+        ],
+
         'devicedetect' => [
             'class' => 'alexandernst\devicedetect\DeviceDetect'
         ],

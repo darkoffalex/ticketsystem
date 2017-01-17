@@ -62,7 +62,7 @@ class MainController extends Controller
     public function actionLogout()
     {
         Yii::$app->user->logout();
-        return $this->redirect(Url::to(['/admin/main/login']));
+        return $this->redirect(Url::to(['/']));
     }
 
     /**
@@ -73,6 +73,6 @@ class MainController extends Controller
     {
         $this->layout = 'main-login';
         $this->view->title = "Ваша заявка на рассмотрении";
-        return $this->render('new-user', compact('model'));
+        return $this->render('new_user', compact('model'));
     }
 }

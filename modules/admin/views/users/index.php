@@ -30,6 +30,7 @@ $gridColumns = [
         'filter' => [
             Constants::ROLE_ADMIN => 'Администратор',
             Constants::ROLE_REDACTOR => 'Редактор',
+            Constants::ROLE_NEW => 'Новый',
         ],
         'enableSorting' => false,
         'format' => 'raw',
@@ -38,6 +39,7 @@ $gridColumns = [
             $roles = [
                 Constants::ROLE_ADMIN => 'Администратор',
                 Constants::ROLE_REDACTOR => 'Редактор',
+                Constants::ROLE_NEW => 'Новый',
             ];
 
             return !empty($roles[$model->role_id]) ? $roles[$model->role_id] : 'Неизвестен';
@@ -110,7 +112,7 @@ $gridColumns = [
         'class' => 'yii\grid\ActionColumn',
         'contentOptions'=>['style'=>'width: 100px; text-align: center;'],
         'header' => 'Действия',
-        'template' => '{delete} &nbsp; {update} &nbsp; {change_status} &nbsp; {preview}',
+        'template' => '{delete} &nbsp; {update} &nbsp; {change_status}',
         'buttons' => [
             'change_status' => function ($url,$model,$key) {
                 /* @var $model \app\models\User */

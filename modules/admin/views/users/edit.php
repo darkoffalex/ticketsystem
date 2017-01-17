@@ -42,6 +42,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <?= $form->field($model, 'surname')->textInput(); ?>
 
+                <?= $form->field($model, 'email')->textInput(); ?>
+
                 <hr>
 
                 <?= $form->field($model, 'username')->textInput(); ?>
@@ -51,6 +53,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= $form->field($model, 'role_id')->dropDownList([
                     Constants::ROLE_ADMIN => 'Администратор',
                     Constants::ROLE_REDACTOR => 'Редактор',
+                    Constants::ROLE_NEW => 'Новый',
                 ]); ?>
             </div>
 

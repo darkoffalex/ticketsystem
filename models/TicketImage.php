@@ -3,7 +3,9 @@
 namespace app\models;
 
 use GuzzleHttp\Psr7\UploadedFile;
+use himiklab\thumbnail\EasyThumbnailImage;
 use Yii;
+use yii\helpers\Url;
 
 /**
  * This is the model class for table "ticket_image".
@@ -78,5 +80,54 @@ class TicketImage extends \yii\db\ActiveRecord
     public function getTicket()
     {
         return $this->hasOne(Ticket::className(), ['id' => 'ticket_id']);
+    }
+
+    /**
+     * Checks if file is exist
+     * @return bool
+     */
+    public function hasFile()
+    {
+        if(empty($this->filename)){
+            return false;
+        }
+        return file_exists(Yii::getAlias('@webroot/uploads/img/'.$this->filename));
+    }
+
+    /**
+     * Deletes uploaded file if exist
+     * @return bool
+     */
+    public function deleteFile()
+    {
+        if(!$this->hasFile()){
+            return false;
+        }
+
+        return unlink(Yii::getAlias('@webroot/uploads/img/'.$this->filename));
+    }
+
+    /**
+     * Returns an URL to thumbnail file
+     * @param int $width
+     * @param int $height
+     * @return bool|string
+     */
+    public function getThumbnailUrl($width = 100, $height = 100)
+    {
+        if(!$this->hasFile()){
+            return false;
+        }
+
+        return EasyThumbnailImage::thumbnailFileUrl(Yii::getAlias('@webroot/uploads/img/'.$this->filename),$width,$height);
+    }
+
+    /**
+     * Returns a full URL to image file
+     * @return string
+     */
+    public function getFullUrl()
+    {
+        return Url::to('@web/uploads/img/'.$this->filename,true);
     }
 }

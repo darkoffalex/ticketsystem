@@ -48,10 +48,10 @@ class AdminModule extends \yii\base\Module
 
         /* @var $user User */
         $user = Yii::$app->user->identity;
-        if($user->role_id == Constants::ROLE_NEW && $action->id != 'new-user'){
+        if($user->role_id == Constants::ROLE_NEW && ($action->id != 'new-user' && $action->id != 'logout')){
             Yii::$app->response->redirect(Url::to(['/admin/main/new-user']));
             return false;
-        }elseif($user->role_id == Constants::ROLE_REDACTOR && $action->id == 'users'){
+        }elseif($user->role_id == Constants::ROLE_REDACTOR && $action->controller->id == 'users'){
             Yii::$app->response->redirect(Url::to(['/admin/tickets/index']));
             return false;
         }

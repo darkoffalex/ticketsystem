@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a27a62b88bd77fb016471a1d1d472599",
-    "content-hash": "7325d14ebe56fe146eaa7565a40abfdd",
+    "hash": "151498ae066ada3eb1b597b86292c2b2",
+    "content-hash": "0f5625b08e91382b14f61838f962d6df",
     "packages": [
         {
             "name": "alexandernst/yii2-device-detect",
@@ -275,6 +275,44 @@
             ]
         },
         {
+            "name": "bower-asset/lightbox2",
+            "version": "2.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lokesh/lightbox2.git",
+                "reference": "2e7daa84b9cf6412084ed5c97fdb448942c62d31"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lokesh/lightbox2/zipball/2e7daa84b9cf6412084ed5c97fdb448942c62d31",
+                "reference": "2e7daa84b9cf6412084ed5c97fdb448942c62d31",
+                "shasum": ""
+            },
+            "type": "bower-asset-library",
+            "extra": {
+                "bower-asset-main": "js/lightbox.js",
+                "bower-asset-ignore": [
+                    "**/.*",
+                    "Gruntfile.js",
+                    "node_modules",
+                    "bower_components",
+                    "test",
+                    "tests"
+                ]
+            },
+            "license": [
+                "CC BY 2.5"
+            ],
+            "description": "The original Lightbox script. Uses jQuery.",
+            "keywords": [
+                "gallery",
+                "images",
+                "jquery",
+                "lightbox",
+                "overlay"
+            ]
+        },
+        {
             "name": "bower-asset/punycode",
             "version": "v1.3.2",
             "source": {
@@ -335,6 +373,47 @@
             "license": [
                 "MIT"
             ]
+        },
+        {
+            "name": "branchonline/yii2-lightbox",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/BranchOnline/yii2-lightbox.git",
+                "reference": "6cfe1a4a4fba046294b718904f7e57f671558fd1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BranchOnline/yii2-lightbox/zipball/6cfe1a4a4fba046294b718904f7e57f671558fd1",
+                "reference": "6cfe1a4a4fba046294b718904f7e57f671558fd1",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/lightbox2": "2.7.1",
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "branchonline\\lightbox\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Jap Mul",
+                    "email": "jap@branchonline.nl"
+                }
+            ],
+            "description": "Lightbox widget for Yii2",
+            "keywords": [
+                "module",
+                "yii2"
+            ],
+            "time": "2016-10-27 15:13:14"
         },
         {
             "name": "cebe/markdown",
@@ -542,6 +621,49 @@
                 "html"
             ],
             "time": "2016-07-16 12:58:58"
+        },
+        {
+            "name": "himiklab/yii2-easy-thumbnail-image-helper",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/himiklab/yii2-easy-thumbnail-image-helper.git",
+                "reference": "2e4f8be7d15def8411220017a98393a6eacf0013"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/himiklab/yii2-easy-thumbnail-image-helper/zipball/2e4f8be7d15def8411220017a98393a6eacf0013",
+                "reference": "2e4f8be7d15def8411220017a98393a6eacf0013",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*",
+                "yiisoft/yii2-imagine": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "himiklab\\thumbnail\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "HimikLab",
+                    "homepage": "https://github.com/himiklab/"
+                }
+            ],
+            "description": "Yii2 helper for creating and caching thumbnails on real time",
+            "keywords": [
+                "helper",
+                "image",
+                "thumbnail",
+                "yii2"
+            ],
+            "time": "2017-01-10 13:15:27"
         },
         {
             "name": "imagine/imagine",
