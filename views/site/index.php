@@ -9,6 +9,11 @@ use yii\helpers\Url;
 $this->title = 'Главная страница сайта';
 $controller = $this->context;
 $user = Yii::$app->user->identity;
+
+/* @var $social kartik\social\Module */
+/* @var $user \app\models\User */
+$social = Yii::$app->getModule('social');
+$callback = Url::to(['/site/fb-login'],true);
 ?>
 
 <div class="site-index">
@@ -16,6 +21,10 @@ $user = Yii::$app->user->identity;
     <div class="jumbotron">
         <h1>Супер-пупер тикет система</h1>
         <p class="lead">Выберите что вам нужно</p>
+
+        <?php if(Yii::$app->user->isGuest): ?>
+            <?= $social->getFbLoginLink($callback,['class'=>'btn btn-primary'],['email']); ?>
+        <?php endif; ?>
     </div>
 
     <div class="body-content">
