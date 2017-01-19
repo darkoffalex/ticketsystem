@@ -17,7 +17,12 @@ $user = Yii::$app->user->identity;
 
 <ul class="timeline" style="margin: 0;">
     <li style="margin:0;">
-        <div class="timeline-item" style="margin: 0;">
+        <?php $colors = [
+            Constants::STATUS_NEW => '#DD4B39',
+            Constants::STATUS_IN_PROGRESS => '#F39C12',
+            Constants::STATUS_DONE => '#414141',
+        ]; ?>
+        <div class="timeline-item" style="margin: 0; border: 1px solid <?= $colors[$model->status_id]; ?>;">
 
             <span class="time"><i class="fa fa-clock-o"></i> <?= substr($model->created_at,0,16); ?></span>
             <h3 class="timeline-header">
