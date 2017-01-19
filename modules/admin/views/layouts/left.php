@@ -48,6 +48,14 @@
                     ],
 
                     [
+                        'label' => 'Профиль',
+                        'icon' => 'fa fa-user',
+                        'active' => $c == 'profile',
+                        'visible' => true,
+                        'url' => ['/admin/profile/index'],
+                    ],
+
+                    [
                         'label' => 'Выход',
                         'icon' => 'fa fa-sign-out',
                         'url' => ['/admin/main/logout']

@@ -17,7 +17,9 @@ $config = [
             'class' => 'kartik\social\Module',
             'facebook' => [
                 'appId' => '915460531914741',
+//                'appId' => '412456035771017',
                 'secret' => 'c30ad2acc2d9bc3fc94b3dca82bdffbc',
+//                'secret' => '6fb284e178ef1040f84bdec721f7201e'
             ],
         ],
     ],

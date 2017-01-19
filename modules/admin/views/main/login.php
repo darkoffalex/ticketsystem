@@ -17,6 +17,11 @@ $fieldOptions2 = [
     'inputTemplate' => "{input}<span class='glyphicon glyphicon-lock form-control-feedback'></span>"
 ];
 
+/* @var $social kartik\social\Module */
+/* @var $user \app\models\User */
+$social = Yii::$app->getModule('social');
+$callback = Url::to(['/site/fb-login'],true);
+
 ?>
 
 <div class="login-box">
@@ -42,12 +47,13 @@ $fieldOptions2 = [
             ->passwordInput(['placeholder' => $model->getAttributeLabel('password')]) ?>
 
         <div class="row">
-            <div class="col-xs-8">
+            <div class="col-xs-6">
                 <?= $form->field($model, 'rememberMe')->checkbox() ?>
             </div>
             <!-- /.col -->
-            <div class="col-xs-4">
-                <?= Html::submitButton('Войти', ['class' => 'btn btn-primary btn-block btn-flat', 'name' => 'login-button']) ?>
+            <div class="col-xs-6">
+                <?= Html::submitButton('Войти', ['class' => 'btn btn-primary btn-flat', 'name' => 'login-button']) ?>
+                <?= $social->getFbLoginLink($callback,['class'=>'btn btn-primary btn-flat'],['email']); ?>
             </div>
             <!-- /.col -->
         </div>

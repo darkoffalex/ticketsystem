@@ -24,6 +24,9 @@ use Yii;
  * @property string $online_at
  * @property integer $created_by_id
  * @property integer $updated_by_id
+ * @property string $bot_key
+ * @property string $bot_user_id
+ * @property string $bot_notify_settings
  *
  * @property Ticket[] $tickets
  * @property TicketComment[] $ticketComments
@@ -44,10 +47,10 @@ class UserDB extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fb_id', 'fb_avatar_url', 'auth_key', 'password_hash', 'password_reset_token'], 'string'],
+            [['fb_id', 'fb_avatar_url', 'auth_key', 'password_hash', 'password_reset_token', 'bot_user_id'], 'string'],
             [['role_id', 'status_id', 'created_by_id', 'updated_by_id'], 'integer'],
             [['created_at', 'updated_at', 'online_at'], 'safe'],
-            [['username', 'name', 'surname', 'email'], 'string', 'max' => 255],
+            [['username', 'name', 'surname', 'email', 'bot_key', 'bot_notify_settings'], 'string', 'max' => 255],
         ];
     }
 
@@ -74,6 +77,9 @@ class UserDB extends \yii\db\ActiveRecord
             'online_at' => 'Online At',
             'created_by_id' => 'Created By ID',
             'updated_by_id' => 'Updated By ID',
+            'bot_key' => 'Bot Key',
+            'bot_user_id' => 'Bot User ID',
+            'bot_notify_settings' => 'Bot Notify Settings',
         ];
     }
 

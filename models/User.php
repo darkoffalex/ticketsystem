@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\helpers\Help;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\helpers\Url;
@@ -164,5 +165,69 @@ class User extends UserDB implements IdentityInterface
     public function getAvatar()
     {
         return !empty($this->fb_avatar_url) ? $this->fb_avatar_url : Url::to('@web/img/no_user.png');
+    }
+
+    /**
+     * Send notification to all users who wants it
+     * @param Ticket $ticket
+     * @param string $message
+     */
+    public static function sendBotNotifications($ticket,$message){
+
+        /* @var $ticket Ticket */
+        $performerId = $ticket->performer_id;
+
+        $q = User::find()->where('bot_user_id IS NOT NULL && bot_notify_settings IS NOT NULL');
+        if(!empty($performerId)){
+            $q->andWhere(['like','bot_notify_settings', (string)$performerId])->orWhere(['bot_notify_settings' => 'all']);
+        }else{
+            $q->andWhere(['bot_notify_settings' => 'all']);
+        }
+
+        $message='Тикет No'. $ticket->id.'.('.Url::to(['/admin/tickets','id' => $ticket->id],true).') '.$message;
+
+        /* @var $recipients User[] */
+        $recipients = $q->all();
+        $urls = [];
+
+        if(!empty($recipients)){
+            foreach($recipients as $rcp){
+                $urls[] = Url::to(['/site/bot-send','recipient' => $rcp->bot_user_id,'message' => $message],true);
+            }
+        }
+
+        Help::multicurl($urls);
+    }
+
+    /**
+     * Gets bot's notification config
+     * @return string
+     */
+    public function getBotConfig()
+    {
+        if(empty($this->bot_user_id)){
+            return 'Бот не подключен';
+        }
+
+        $settings = explode(':',$this->bot_notify_settings);
+
+        if(in_array('all',$settings)){
+            return 'Вы получаете уведомления о всех тикетах';
+        }
+
+        $result = [];
+        foreach($settings as $id){
+            /* @var $user User */
+            $user = User::find()->where(['id' => (int)$id])->one();
+            if(!empty($user)){
+                $result[] = $user->name.' '.$user->surname;
+            }
+        }
+
+        if(!empty($result)){
+            return 'Вы получаете уведомления о тикетах пользователей : '.implode(', ',$result);
+        }
+
+        return 'Вы не получаете уведмлений (бот подклюечен)';
     }
 }

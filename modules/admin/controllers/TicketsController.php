@@ -19,11 +19,11 @@ use yii\web\UploadedFile;
 
 class TicketsController extends Controller
 {
-    public function actionIndex()
+    public function actionIndex($id = null)
     {
         $searchModel = new TicketSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        return $this->render('index', compact('searchModel','dataProvider'));
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams,$id);
+        return $this->render('index', compact('searchModel','dataProvider','id'));
     }
 
     /**
@@ -89,6 +89,8 @@ class TicketsController extends Controller
         $model->appendToLog('Взят в обработку пользователем - '.$user->name.' '.$user->surname);
         $model->update();
 
+        User::sendBotNotifications($model,'взят в обработку пользователем - '.$user->name.' '.$user->surname);
+
         return $this->redirect(Yii::$app->request->referrer);
     }
 
@@ -140,6 +142,8 @@ class TicketsController extends Controller
                 $model->updated_by_id = Yii::$app->user->id;
                 $model->updated_at = date('Y-m-d H:i:s',time());
                 $ticket->update();
+
+                User::sendBotNotifications($ticket,'прокомментирован пользователем - '.$model->author->name.' '.$model->author->surname);
             }
 
             return 'OK';
@@ -177,6 +181,8 @@ class TicketsController extends Controller
         $model->updated_at = date('Y-m-d H:i:s', time());
         $model->appendToLog($user->name.' '.$user->surname.' сменил статус на "'.$statuses[$status].'"');
         $model->update();
+
+        User::sendBotNotifications($model,',статус изменен пользователем '.$user->name.' '.$user->surname.' на "'.$statuses[$status].'"');
 
         if(Yii::$app->request->isAjax){
             return $this->actionTicketAjaxRefresh($model->id);
@@ -234,10 +240,12 @@ class TicketsController extends Controller
                             $model->status_id = Constants::STATUS_IN_PROGRESS;
                         }
                         $model->appendToLog($user->name.' '.$user->surname.' дилегировал тикет '.$model->performer->name.' '.$model->performer->surname);
+                        User::sendBotNotifications($model,'делегирован пользователем '.$user->name.' '.$user->surname.' на '.$model->performer->name.' '.$model->performer->surname);
                     }
                     else{
                         $model->status_id = Constants::STATUS_NEW;
                         $model->appendToLog($user->name.' '.$user->surname.' обнулил исполнителя');
+                        User::sendBotNotifications($model,', исполнитель убран пользователем '.$user->name.' '.$user->surname);
                     }
                     $model->update();
                 }
@@ -276,6 +284,7 @@ class TicketsController extends Controller
                 $model->updated_by_id = Yii::$app->user->id;
                 $model->status_id = Constants::STATUS_NEW;
                 $model->appendToLog('Создан тикет');
+                User::sendBotNotifications($model,'создан пользователем '.$user->name.' '.$user->surname);
                 $saved = $model->save();
 
                 if($saved){
@@ -284,12 +293,13 @@ class TicketsController extends Controller
                     if(!empty($model->performer)){
                         $model->status_id = Constants::STATUS_IN_PROGRESS;
                         $model->appendToLog($user->name.' '.$user->surname.' создал тикет для '.$model->performer->name.' '.$model->performer->surname);
+                        User::sendBotNotifications($model,'создан пользователем '.$user->name.' '.$user->surname.' и назначен на '.$model->performer->name.' '.$model->performer->surname);
                         $model->files = null;
                         $model->update();
                     }
                 }
 
-                Yii::$app->session->setFlash('contactFormSubmitted',true);
+                return $this->redirect(Url::to(['/admin/tickets/index']));
             }
         }
 

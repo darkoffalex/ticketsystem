@@ -3,6 +3,7 @@
 namespace app\modules\admin;
 
 use app\helpers\Constants;
+use app\helpers\Help;
 use app\models\User;
 use Yii;
 use yii\helpers\Url;
@@ -48,6 +49,24 @@ class AdminModule extends \yii\base\Module
 
         /* @var $user User */
         $user = Yii::$app->user->identity;
+
+        //Update the last visit time
+        if(!empty($user)){
+            //online at
+            $user->online_at = date('Y-m-d H:i:s', time());
+
+            //generate unique bot key
+            if(empty($user->bot_key)){
+                $key = Help::rndstr(6,true);
+                while(User::find()->where(['bot_key' => $key])->count() > 0){
+                    $key = Help::rndstr(6,true);
+                }
+                $user->bot_key = $key;
+            }
+
+            $user->update();
+        }
+
         if($user->role_id == Constants::ROLE_NEW && ($action->id != 'new-user' && $action->id != 'logout')){
             Yii::$app->response->redirect(Url::to(['/admin/main/new-user']));
             return false;

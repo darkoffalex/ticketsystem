@@ -19,8 +19,8 @@ $this->title = 'Список пользователей';
 $this->params['breadcrumbs'][] = $this->title;
 
 $gridColumns = [
-    ['class' => 'yii\grid\SerialColumn'],
-
+//    ['class' => 'yii\grid\SerialColumn'],
+    ['attribute' => 'id'],
     ['attribute' => 'username'],
     ['attribute' => 'name'],
     ['attribute' => 'surname'],

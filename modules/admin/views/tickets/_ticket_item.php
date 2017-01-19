@@ -19,10 +19,12 @@ $user = Yii::$app->user->identity;
     <li style="margin:0;">
         <div class="timeline-item" style="margin: 0;">
 
-            <span class="time"><i class="fa fa-clock-o"></i> <?= Yii::$app->formatter->asDatetime($model->created_at,'Y.m.d, H:i'); ?></span>
+            <span class="time"><i class="fa fa-clock-o"></i> <?= substr($model->created_at,0,16); ?></span>
             <h3 class="timeline-header">
-                Автор: <?= $model->author_name; ?>&nbsp;
-                |&nbsp;
+                <strong>ID:<?= $model->id; ?></strong>
+                &nbsp;|&nbsp;
+                Автор: <?= $model->author_name; ?>
+                &nbsp;|&nbsp;
                 <?php if($model->status_id == Constants::STATUS_NEW): ?>
                     <span class="label label-danger">Новый</span>
                 <?php elseif($model->status_id == Constants::STATUS_IN_PROGRESS): ?>
@@ -42,8 +44,8 @@ $user = Yii::$app->user->identity;
                 <?php if(empty($model->performer)): ?>
                     <a href="<?= Url::to(['/admin/tickets/take', 'id' => $model->id]); ?>" class="btn btn-primary btn-xs">Взять в обработку</a>
                 <?php endif; ?>
-                &nbsp;|&nbsp;
                 <?php if($user->role_id == Constants::ROLE_ADMIN): ?>
+                    &nbsp;|&nbsp;
                     <a data-target=".modal" data-toggle="modal" href="<?= Url::to(['/admin/tickets/change-performer', 'id' => $model->id]); ?>" class="btn btn-primary btn-xs">Назначить исполнителя</a>
                     <a data-confirm="Удалить тикет навсегда ?" href="<?= Url::to(['/admin/tickets/delete', 'id' => $model->id]); ?>" class="btn btn-primary btn-xs">Удалить</a>
                 <?php endif; ?>
@@ -76,7 +78,7 @@ $user = Yii::$app->user->identity;
                                 <?php $start = count($model->ticketComments)-3; $start = $start >= 0 ? $start : 0; ?>
                                 <?php $last3 = array_slice($model->ticketComments,$start,3); ?>
                                 <?php foreach($last3 as $last): ?>
-                                    <p><strong><?= Yii::$app->formatter->asDatetime($last->created_at,'Y.m.d, H:i'); ?> <?= $last->author->name.' '.$last->author->surname; ?> - </strong> <?= $last->text; ?></p>
+                                    <p><strong><?= substr($last->created_at,0,16); ?> <?= $last->author->name.' '.$last->author->surname; ?> - </strong> <?= $last->text; ?></p>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 Нет комментариев

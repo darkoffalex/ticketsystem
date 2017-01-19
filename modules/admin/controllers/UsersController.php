@@ -3,6 +3,7 @@
 namespace app\modules\admin\controllers;
 
 use app\helpers\Constants;
+use app\models\TicketComment;
 use app\models\UserSearch;
 use Yii;
 use yii\db\Query;
@@ -146,6 +147,9 @@ class UsersController extends Controller
         if(empty($model) || $model->id == Yii::$app->user->id){
             throw new NotFoundHttpException(Yii::t('admin','User not found'),404);
         }
+
+        //delete comments
+        TicketComment::deleteAll(['author_id' => $model->id]);
 
         //delete from db
         $model->delete();

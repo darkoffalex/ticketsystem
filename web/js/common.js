@@ -1,4 +1,5 @@
 $(document).ready(function () {
+
     /********************************** M O D A L  M A N A G E M E N T  W I N D O W ***********************************/
 
     /**
@@ -14,7 +15,10 @@ $(document).ready(function () {
             url: form.attr('action'),
             type: 'POST',
             data: formData,
-            async: false,
+            async: true,
+            beforeSend: function(){
+                $.LoadingOverlay("show");
+            },
             success: function (data) {
                 if(data != 'OK'){
                     $('.modal-content').html(data);
@@ -29,6 +33,7 @@ $(document).ready(function () {
                         }
                     });
                 }
+                $.LoadingOverlay("hide");
             },
             cache: false,
             contentType: false,
@@ -57,9 +62,13 @@ $(document).ready(function () {
         $.ajax({
             url: link.attr('href'),
             type: 'GET',
-            async: false,
+            async: true,
+            beforeSend: function(){
+                $.LoadingOverlay("show");
+            },
             success: function(reloaded_data){
                 container.html(reloaded_data);
+                $.LoadingOverlay("hide");
             }
         });
 

@@ -32,7 +32,7 @@ class ContactForm extends Model
         return [
             [['name', 'phone_or_email', 'message'], 'string'],
             [['phone_or_email', 'message'], 'required', 'message' => 'Поле обязательно для заполнения'],
-            [['files'], 'each', 'rule' => ['file', 'extensions' => ['png', 'jpg', 'gif'], 'maxSize' => 1024*1024]]
+            [['files'], 'each', 'rule' => ['file', 'extensions' => ['png', 'jpg', 'gif', 'doc', 'xls', 'xlsx', 'docx', 'zip', 'rar', 'txt'], 'maxSize' => 1024*1024]]
         ];
     }
 
@@ -58,8 +58,8 @@ class ContactForm extends Model
     public function getBody()
     {
         $text = "Контактные данные: \n";
-        $text.= "Телефон/email - {$this->phone_or_email}";
-        $text.= "Имя - {$this->name}";
+        $text.= "Телефон/email - {$this->phone_or_email} \n";
+        $text.= "Имя - {$this->name} \n";
         $text.= "\n\n";
         $text.= "Сообщение:\n";
         $text.= strip_tags($this->message);
@@ -75,7 +75,7 @@ class ContactForm extends Model
     public function getFirstAdminEmail()
     {
         /* @var $admin User */
-        $admin = User::find()->where(['status_id' => Constants::STATUS_ENABLED, 'role_id' => Constants::ROLE_ADMIN]);
+        $admin = User::find()->where(['status_id' => Constants::STATUS_ENABLED, 'role_id' => Constants::ROLE_ADMIN])->orderBy('id ASC')->one();
         return $admin->email;
     }
 

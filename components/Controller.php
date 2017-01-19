@@ -51,6 +51,10 @@ class Controller extends BaseController
      */
     public function beforeAction($action)
     {
+        if($action->id == 'bot-hook' || $action->id == 'bot-send'){
+            $this->enableCsrfValidation = false;
+        }
+
         //TODO: здесь код что будет выполняться пепед каждый действием
         return parent::beforeAction($action);
     }

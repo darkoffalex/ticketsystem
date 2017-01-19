@@ -25,7 +25,8 @@ class AppAsset extends AssetBundle
     ];
 
     public $js = [
-        'js/common.js'
+        'js/common.js',
+        'js/jquery-loading-overlay/loadingoverlay.min.js'
     ];
 
     public $depends = [

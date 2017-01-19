@@ -23,7 +23,7 @@ $controller = $this->context;
             <div class="box-comment">
                 <img class="img-circle img-sm" src="<?= $comment->author->getAvatar(); ?>" alt="user image">
                 <div class="comment-text">
-                    <span class="username"><?= $comment->author->name.' '.$comment->author->surname; ?><span class="text-muted pull-right"><?= Yii::$app->formatter->asDatetime($comment->created_at,'Y.m.d, H:i'); ?></span></span>
+                    <span class="username"><?= $comment->author->name.' '.$comment->author->surname; ?><span class="text-muted pull-right"><?= substr($comment->created_at,0,16); ?></span></span>
                     <?= $comment->text; ?>
                 </div><!-- /.comment-text -->
             </div>

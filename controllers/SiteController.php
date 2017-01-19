@@ -9,6 +9,7 @@ use app\models\Ticket;
 use app\models\User;
 use Facebook\Exceptions\FacebookSDKException;
 use Facebook\GraphNodes\GraphPicture;
+use pimax\FbBotApp;
 use Yii;
 use app\components\Controller;
 use yii\helpers\ArrayHelper;
@@ -31,12 +32,97 @@ class SiteController extends Controller
     }
 
     /**
-     * Главная страница
+     * Index page
      * @return string
      */
     public function actionIndex()
     {
         return $this->render('index');
+    }
+
+    /**
+     * Sending message from bot to recipient (used for async cURL)
+     * @param $recipient
+     * @param $message
+     */
+    public function actionBotSend($recipient,$message)
+    {
+        Help::azsend($recipient,$message);
+    }
+
+    /**
+     * Bot hook
+     * @param $command
+     * @param null $param
+     * @param null $sender
+     * @return string
+     * @throws \Exception
+     */
+    public function actionBotHook($command, $param = null, $sender = null)
+    {
+        if($command == 'bind'){
+            /* @var $user User */
+            $user = User::find()->where('bot_key = :key && bot_key IS NOT NULL',['key' => $param])->one();
+            if(!empty($user) && !empty($sender)){
+                $user->bot_user_id = $sender;
+                $user->bot_notify_settings = 'all';
+                $user->update();
+                return 'Бот был приявязан к пользователю тикет-системы под именем '.$user->name.' '.$user->surname;
+            }else{
+                return 'Возникла ошибка. Введен неверный ключ';
+            }
+        }elseif($command == 'get'){
+            /* @var $user User */
+            $user = User::find()->where('bot_user_id = :usr && bot_user_id IS NOT NULL',['usr' => $sender])->one();
+            if(!empty($user) && !empty($param)){
+                if($param == 'all'){
+                    $user->bot_notify_settings = 'all';
+                    $user->update();
+                    return 'Настройки успешно обновлены. Вы будете получать уведомления о всех тикатах';
+                }else{
+                    $ids = explode(',',$param);
+                    $names = [];
+                    $newIds = [];
+                    foreach($ids as $id){
+                        /* @var $u User */
+                        $u = User::find()->where(['id' => (int)$id])->one();
+                        if(!empty($u)){
+                            $names[] = $u->name.' '.$u->surname;
+                            $newIds[] = $u->id;
+                        }
+                    }
+                    if(!empty($ids)){
+                        $user->bot_notify_settings = implode(":",$newIds);
+                        $user->update();
+                        return 'Настройки успешно обновлены. Вы будете получать уведомения о тикетах назначенных пользователям : '.implode(', ',$names);
+                    }else{
+                        return 'Возникла ошибка. Ни один из указанных ID не был найден в базе тикет-системы.';
+                    }
+                }
+            }else{
+                return 'Возникла ошибка. Убедитесь что бот привязан к вашему аккаунту в тикет-стстеме';
+            }
+        }elseif($command == 'info'){
+            /* @var $user User */
+            $user = User::find()->where('bot_user_id = :usr && bot_user_id IS NOT NULL',['usr' => $sender])->one();
+            if(!empty($user)){
+                return $user->getBotConfig();
+            }else{
+                return 'Возникла ошибка. Убедитесь что бот привязан к вашему аккаунту в тикет-стстеме';
+            }
+        }elseif($command == 'unbind'){
+            /* @var $user User */
+            $user = User::find()->where('bot_user_id = :usr && bot_user_id IS NOT NULL',['usr' => $sender])->one();
+            if(!empty($user)){
+                $user->bot_user_id = '';
+                $user->update();
+                return 'Вы успешно отвязали бота от вашего аккаунта. Вы не будете получать уведомления';
+            }else{
+                return 'Возникла ошибка. Убедитесь что бот привязан к вашему аккаунту в тикет-стстеме';
+            }
+        }
+
+        return 'Возникла ошибка. Проверьте правильность команды';
     }
 
     /**
@@ -116,6 +202,7 @@ class SiteController extends Controller
         return $this->redirect(Url::to(['/site/index']));
     }
 
+
     /**
      * Feedback - complaint (create ticket)
      * @return string
@@ -134,6 +221,7 @@ class SiteController extends Controller
                 $saved = $model->save();
 
                 if($saved){
+                    User::sendBotNotifications($model,'создан');
                     $model->createFilesFromUploaded();
                 }
 
