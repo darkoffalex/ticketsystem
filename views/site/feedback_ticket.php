@@ -40,16 +40,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 <hr>
                 <div class="row">
                     <div class="col-lg-3">
-                        <a class="btn btn-default active" href="<?= Url::to(['/complaint']); ?>">Жалоба</a>
-                    </div>
-                    <div class="col-lg-3 text-center">
-                        <a class="btn btn-default" href="<?= Url::to(['/offer']); ?>">Предложение</a>
-                    </div>
-                    <div class="col-lg-3 text-center">
-                        <a class="btn btn-default" href="<?= Url::to(['/comment']); ?>">Отзыв</a>
+                        <a class="btn btn-sm btn-default active btn-block" href="<?= Url::to(['/complaint']); ?>">Жалоба</a>
                     </div>
                     <div class="col-lg-3">
-                        <a class="btn btn-default pull-right" href="<?= Url::to(['/question']); ?>">Вопрос</a>
+                        <a class="btn btn-sm btn-default btn-block" href="<?= Url::to(['/offer']); ?>">Предложение</a>
+                    </div>
+                    <div class="col-lg-3">
+                        <a class="btn btn-sm btn-default btn-block" href="<?= Url::to(['/comment']); ?>">Отзыв</a>
+                    </div>
+                    <div class="col-lg-3">
+                        <a class="btn btn-sm btn-default btn-block" href="<?= Url::to(['/question']); ?>">Вопрос</a>
                     </div>
                 </div>
                 <hr>

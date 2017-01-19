@@ -41,16 +41,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 <hr>
                 <div class="row">
                     <div class="col-lg-3">
-                        <a class="btn btn-default <?= Yii::$app->controller->action->id == 'complaint' ? 'active' : ''; ?>" href="<?= Url::to(['/complaint']); ?>">Жалоба</a>
-                    </div>
-                    <div class="col-lg-3 text-center">
-                        <a class="btn btn-default <?= $model->type == Constants::EMAIL_TYPE_OFFER ? 'active' : ''; ?>" href="<?= Url::to(['/offer']); ?>">Предложение</a>
-                    </div>
-                    <div class="col-lg-3 text-center">
-                        <a class="btn btn-default <?= $model->type == Constants::EMAIL_TYPE_COMMENT ? 'active' : ''; ?>" href="<?= Url::to(['/comment']); ?>">Отзыв</a>
+                        <a class="btn btn-sm btn-default btn-block <?= Yii::$app->controller->action->id == 'complaint' ? 'active' : ''; ?>" href="<?= Url::to(['/complaint']); ?>">Жалоба</a>
                     </div>
                     <div class="col-lg-3">
-                        <a class="btn btn-default pull-right <?= $model->type == Constants::EMAIl_TYPE_QUESTION ? 'active' : ''; ?>" href="<?= Url::to(['/question']); ?>">Вопрос</a>
+                        <a class="btn btn-sm btn-default btn-block <?= $model->type == Constants::EMAIL_TYPE_OFFER ? 'active' : ''; ?>" href="<?= Url::to(['/offer']); ?>">Предложение</a>
+                    </div>
+                    <div class="col-lg-3">
+                        <a class="btn btn-sm btn-default btn-block <?= $model->type == Constants::EMAIL_TYPE_COMMENT ? 'active' : ''; ?>" href="<?= Url::to(['/comment']); ?>">Отзыв</a>
+                    </div>
+                    <div class="col-lg-3">
+                        <a class="btn btn-sm btn-default btn-block <?= $model->type == Constants::EMAIl_TYPE_QUESTION ? 'active' : ''; ?>" href="<?= Url::to(['/question']); ?>">Вопрос</a>
                     </div>
                 </div>
                 <hr>
