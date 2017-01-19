@@ -50,6 +50,7 @@ $controller = $this->context;
     <script type="text/javascript">
         $('.modal').on('hide.bs.modal', function() {
             $(this).removeData();
+            $(this).find('.modal-content').html('');
         });
     </script>
 

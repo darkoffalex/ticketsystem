@@ -51,7 +51,7 @@ $user = Yii::$app->user->identity;
                 <?php endif; ?>
                 <?php if($user->role_id == Constants::ROLE_ADMIN): ?>
                     &nbsp;|&nbsp;
-                    <a data-target=".modal" data-toggle="modal" href="<?= Url::to(['/admin/tickets/change-performer', 'id' => $model->id]); ?>" class="btn btn-primary btn-xs">Назначить исполнителя</a>
+                    <a data-target=".modal" data-toggle="modal" href="<?= Url::to(['/admin/tickets/change-performer', 'id' => $model->id]); ?>" class="btn btn-primary btn-xs">Назначить</a>
                     <a data-confirm="Удалить тикет навсегда ?" href="<?= Url::to(['/admin/tickets/delete', 'id' => $model->id]); ?>" class="btn btn-primary btn-xs">Удалить</a>
                 <?php endif; ?>
             </h3>

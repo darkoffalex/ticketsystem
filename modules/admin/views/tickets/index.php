@@ -115,7 +115,7 @@ $appended =
                 Constants::STATUS_IN_PROGRESS => 'В работе',
                 Constants::STATUS_DONE => 'Отработан',
             ],
-            'enableSorting' => false,
+            'enableSorting' => true,
             'format' => 'raw',
             'contentOptions'=>['style' => 'display:none;'],
             'value' => function ($model, $key, $index, $column){

@@ -48,7 +48,7 @@ $user = Yii::$app->user->identity;
                 <?= $form->field($model, 'phone_or_email'); ?>
                 <?= $form->field($model, 'link')->textInput()->label('Ссылка на файл/комментарий с нарушением <a data-target=".modal" data-toggle="modal" href="'.Url::to(['/site/where-to-get']).'">(где взять?)</a>'); ?>
                 <?= $form->field($model, 'text')->textarea(); ?>
-                <?= $form->field($model, 'performer_id')->widget(Select2::classname(),[
+                <?= $form->field($model, 'performer_id')->widget(Select2::className(),[
                     'initValueText' => !empty($model->performer) ? $model->performer->name.' '.$model->performer->surname : '',
                     'options' => ['placeholder' => 'Найти пользователя'],
                     'language' => Yii::$app->language,
