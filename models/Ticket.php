@@ -116,7 +116,7 @@ class Ticket extends \yii\db\ActiveRecord
     public function appendToLog($message)
     {
         $log = json_decode($this->log,true);
-        $log[date('Y.m.d, H:i', time())] = $message;
+        $log[] = date('Y.m.d, H:i', time()).' '.$message;
         $this->log = json_encode($log);
     }
 
@@ -136,8 +136,8 @@ class Ticket extends \yii\db\ActiveRecord
             $log = array_slice($log,0,$length,true);
         }
 
-        foreach($log as $date => $action){
-            $logStr .= $date.' - '.$action.$separator;
+        foreach($log as $action){
+            $logStr .= $action.$separator;
         }
 
         return $logStr;
