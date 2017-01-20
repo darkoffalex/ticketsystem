@@ -13,6 +13,22 @@ use yii\helpers\Url;
 $this->title = 'Жалоба';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<style type="text/css">
+    .delete-file
+    {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        background-image: url("<?= Url::to('@web/img/delete-file.png'); ?>");
+        background-size: 24px;
+        background-position: center center;
+        cursor: pointer;
+        margin-bottom: -6px;
+        margin-left: 5px;
+    }
+</style>
+
 <div class="site-contact" style="max-width: 500px; margin: 0 auto;">
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -62,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <label>Скринщоты:</label>
 
                 <div class="file-inputs">
-                    <?= $form->field($model, 'files[0]',['template' => "<span class='file-label'></span><button type='button' class='btn btn-xs btn-primary delete-file hidden' style='padding: 3px 5px;'>удал.</button>{input}"])->fileInput(['data-model' => 'Ticket'])->label(false)->error(false); ?>
+                    <?= $form->field($model, 'files[0]',['template' => "<span class='file-label'></span><a class='delete-file hidden'></a>{input}"])->fileInput(['data-model' => 'Ticket'])->label(false)->error(false); ?>
                 </div>
                 <div style="clear: both;"></div>
 
@@ -112,7 +128,7 @@ $this->params['breadcrumbs'][] = $this->title;
             currentIndex++;
 
             //add new file input with delete button
-            var blockHtml = '<div class="form-group field-'+modelLow+'-files-'+currentIndex+'"><span class="file-label"></span><button type="button" class="btn btn-xs btn-primary delete-file hidden" style="padding: 3px 5px;">удал.</button><input name="'+model+'[files]['+currentIndex+']" value="" type="hidden"><input id="'+modelLow+'-files-'+currentIndex+'" name="'+model+'[files]['+currentIndex+']" data-model="'+model+'" type="file"></div>';
+            var blockHtml = '<div class="form-group field-'+modelLow+'-files-'+currentIndex+'"><span class="file-label"></span><a class="delete-file hidden"></a><input name="'+model+'[files]['+currentIndex+']" value="" type="hidden"><input id="'+modelLow+'-files-'+currentIndex+'" name="'+model+'[files]['+currentIndex+']" data-model="'+model+'" type="file"></div>';
             $('.file-inputs').append(blockHtml);
 
             //activate current's input remove button
