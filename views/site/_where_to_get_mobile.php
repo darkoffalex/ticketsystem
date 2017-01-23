@@ -15,7 +15,8 @@ $controller = $this->context;
     </div>
 
     <div class="modal-body">
-        <p>Инструкция для мобильного</p>
+        <img src="<?= Url::to('@web/img/wg_m_1.png'); ?>">
+        <img src="<?= Url::to('@web/img/wg_m_2.png'); ?>">
     </div>
 
     <div class="modal-footer">

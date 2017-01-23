@@ -127,10 +127,13 @@ class SiteController extends Controller
 
     /**
      * Login with Facebook
+     * @param null $type
      * @return \yii\web\Response
      * @throws NotAcceptableHttpException
+     * @throws \Exception
+     * @throws \yii\base\Exception
      */
-    public function actionFbLogin()
+    public function actionFbLogin($type = null)
     {
         /* @var $social \kartik\social\Module */
         $social = Yii::$app->getModule('social');
@@ -186,8 +189,15 @@ class SiteController extends Controller
                     Yii::$app->user->login($user);
                 }
 
+                $redirectUrls = [
+                    'complaint' => Url::to(['/complaint']),
+                    'offer' => Url::to(['/offer']),
+                    'comment' => Url::to(['/offer']),
+                    'question' => Url::to(['/question']),
+                ];
+
                 //go to admin panel
-                return $this->redirect(Url::to(['/admin/main/index']));
+                return $this->redirect(ArrayHelper::getValue($redirectUrls,$type,Url::to(['/admin/main/index'])));
             }
 
             //log error if needed
@@ -202,6 +212,15 @@ class SiteController extends Controller
         return $this->redirect(Url::to(['/site/index']));
     }
 
+    /**
+     * Logout
+     * @return \yii\web\Response
+     */
+    public function actionLogout()
+    {
+        Yii::$app->user->logout();
+        return $this->redirect(Url::to(['/']));
+    }
 
     /**
      * Feedback - complaint (create ticket)
@@ -209,10 +228,22 @@ class SiteController extends Controller
      */
     public function actionComplaint()
     {
+        if(Yii::$app->user->isGuest){
+            return $this->render('please_login',['type' => 'complaint']);
+        }
+
+        /* @var $user User */
+        $user = Yii::$app->user->identity;
+
         $model = new Ticket();
 
         if($model->load(Yii::$app->request->post())){
             $model->files = UploadedFile::getInstances($model,'files');
+            $model->author_name = $user->name.' '.$user->surname;
+            $model->phone_or_email = $user->email;
+            $model->category_id = $user->id;
+            $model->updated_by_id = $user->id;
+
             if($model->validate()){
                 $model->created_at = date('Y-m-d H:i:s',time());
                 $model->updated_at = date('Y-m-d H:i:s',time());
@@ -233,6 +264,63 @@ class SiteController extends Controller
     }
 
     /**
+     * Feedback - offer (send email)
+     * @return string
+     */
+    public function actionOffer()
+    {
+        if(Yii::$app->user->isGuest){
+            return $this->render('please_login',['type' => 'offer']);
+        }
+
+        /* @var $user User */
+        $user = Yii::$app->user->identity;
+
+        $model = new ContactForm();
+        $model->type = Constants::EMAIL_TYPE_OFFER;
+        $this->commonEmailProcessing($model,$user);
+        return $this->render('feedback_email',compact('model'));
+    }
+
+    /**
+     * Feedback - comment (send email)
+     * @return string
+     */
+    public function actionComment()
+    {
+        if(Yii::$app->user->isGuest){
+            return $this->render('please_login',['type' => 'comment']);
+        }
+
+        /* @var $user User */
+        $user = Yii::$app->user->identity;
+
+        $model = new ContactForm();
+        $model->type = Constants::EMAIL_TYPE_COMMENT;
+        $this->commonEmailProcessing($model,$user);
+        return $this->render('feedback_email',compact('model'));
+    }
+
+    /**
+     * Feedback - question (send email)
+     * @return string
+     */
+    public function actionQuestion()
+    {
+        if(Yii::$app->user->isGuest){
+            return $this->render('please_login',['type' => 'question']);
+        }
+
+        /* @var $user User */
+        $user = Yii::$app->user->identity;
+
+        $model = new ContactForm();
+        $model->type = Constants::EMAIl_TYPE_QUESTION;
+        $this->commonEmailProcessing($model,$user);
+        return $this->render('feedback_email',compact('model'));
+    }
+
+    /**
      * Where to get modal window (depending on browser)
      * @return string
      */
@@ -248,51 +336,18 @@ class SiteController extends Controller
     }
 
     /**
-     * Feedback - offer (send email)
-     * @return string
-     */
-    public function actionOffer()
-    {
-        $model = new ContactForm();
-        $model->type = Constants::EMAIL_TYPE_OFFER;
-        $this->commonEmailProcessing($model);
-        return $this->render('feedback_email',compact('model'));
-    }
-
-    /**
-     * Feedback - comment (send email)
-     * @return string
-     */
-    public function actionComment()
-    {
-        $model = new ContactForm();
-        $model->type = Constants::EMAIL_TYPE_COMMENT;
-        $this->commonEmailProcessing($model);
-        return $this->render('feedback_email',compact('model'));
-    }
-
-    /**
-     * Feedback - question (send email)
-     * @return string
-     */
-    public function actionQuestion()
-    {
-        $model = new ContactForm();
-        $model->type = Constants::EMAIl_TYPE_QUESTION;
-        $this->commonEmailProcessing($model);
-        return $this->render('feedback_email',compact('model'));
-    }
-
-    /**
      * Processing email - form submit action
-     * @param $model
+     * @param $model ContactForm
+     * @param $user User
      */
-    public function commonEmailProcessing($model)
+    public function commonEmailProcessing($model,$user)
     {
         /* @var $model ContactForm */
 
         if($model->load(Yii::$app->request->post())){
             $model->files = UploadedFile::getInstances($model,'files');
+            $model->name = $user->name.' '.$user->surname;
+            $model->phone_or_email = $user->email;
             if($model->validate()){
                 $model->contact();
                 Yii::$app->session->setFlash('contactFormSubmitted',true);

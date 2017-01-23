@@ -57,7 +57,7 @@ class Ticket extends \yii\db\ActiveRecord
             [['performer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['performer_id' => 'id']],
 
             [['link'],'url'],
-            [['phone_or_email', 'text', 'author_name'], 'required', 'message' => 'Поле обязательно для заполнения'],
+            [['text', 'author_name'], 'required', 'message' => 'Поле обязательно для заполнения'],
             [['files'], 'each', 'rule' => ['file', 'extensions' => ['png', 'jpg', 'gif'], 'maxSize' => 1024*1024*2]]
         ];
     }

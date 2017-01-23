@@ -31,7 +31,7 @@ class ContactForm extends Model
     {
         return [
             [['name', 'phone_or_email', 'message'], 'string'],
-            [['phone_or_email', 'message'], 'required', 'message' => 'Поле обязательно для заполнения'],
+            [['message'], 'required', 'message' => 'Поле обязательно для заполнения'],
             [['files'], 'each', 'rule' => ['file', 'extensions' => ['png', 'jpg', 'gif', 'doc', 'xls', 'xlsx', 'docx', 'zip', 'rar', 'txt'], 'maxSize' => 1024*1024]]
         ];
     }

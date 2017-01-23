@@ -50,10 +50,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ]); ?>
 
-                <?= $form->field($model, 'author_name')->textInput(['autofocus' => true]) ?>
-                <?= $form->field($model, 'phone_or_email'); ?>
-
-                <hr>
                 <div class="row">
                     <div class="col-lg-3">
                         <a class="btn btn-sm btn-default active btn-block" href="<?= Url::to(['/complaint']); ?>">Жалоба</a>
@@ -75,7 +71,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <hr>
 
-                <label>Скринщоты:</label>
+                <label>Скриншоты:</label>
 
                 <div class="file-inputs">
                     <?= $form->field($model, 'files[0]',['template' => "<span class='file-label'></span><a class='delete-file hidden'></a>{input}"])->fileInput(['data-model' => 'Ticket'])->label(false)->error(false); ?>

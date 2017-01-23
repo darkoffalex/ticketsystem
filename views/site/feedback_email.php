@@ -50,10 +50,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ]); ?>
 
-                <?= $form->field($model, 'name')->textInput(['autofocus' => true]) ?>
-                <?= $form->field($model, 'phone_or_email'); ?>
-
-                <hr>
                 <div class="row">
                     <div class="col-lg-3">
                         <a class="btn btn-sm btn-default btn-block <?= Yii::$app->controller->action->id == 'complaint' ? 'active' : ''; ?>" href="<?= Url::to(['/complaint']); ?>">Жалоба</a>

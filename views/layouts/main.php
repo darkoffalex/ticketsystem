@@ -33,7 +33,11 @@ AppAsset::register($this);
 <footer class="footer">
     <div class="container">
         <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
-        <p class="pull-right"></p>
+        <p class="pull-right">
+            <?php if(!Yii::$app->user->isGuest): ?>
+                <a href="<?= \yii\helpers\Url::to(['/site/logout']); ?>" class="btn btn-primary">Выйти</a>
+            <?php endif; ?>
+        </p>
     </div>
 </footer>
 
