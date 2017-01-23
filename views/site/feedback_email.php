@@ -30,6 +30,13 @@ $this->params['breadcrumbs'][] = $this->title;
 </style>
 
 <div class="site-contact" style="max-width: 500px; margin: 0 auto;">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <img class="img-responsive img-rounded" src="<?= Url::to('@web/img/form_pic.jpg'); ?>">
+        </div>
+    </div>
+
     <h1><?= Html::encode($this->title) ?></h1>
 
     <?php if(Yii::$app->session->hasFlash('contactFormSubmitted')): ?>
