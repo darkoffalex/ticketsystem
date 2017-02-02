@@ -27,9 +27,12 @@ use Yii;
  * @property string $bot_key
  * @property string $bot_user_id
  * @property string $bot_notify_settings
+ * @property string $fb_profile_url
  *
  * @property Ticket[] $tickets
+ * @property Ticket[] $tickets0
  * @property TicketComment[] $ticketComments
+ * @property UserMessage[] $userMessages
  */
 class UserDB extends \yii\db\ActiveRecord
 {
@@ -50,7 +53,7 @@ class UserDB extends \yii\db\ActiveRecord
             [['fb_id', 'fb_avatar_url', 'auth_key', 'password_hash', 'password_reset_token', 'bot_user_id'], 'string'],
             [['role_id', 'status_id', 'created_by_id', 'updated_by_id'], 'integer'],
             [['created_at', 'updated_at', 'online_at'], 'safe'],
-            [['username', 'name', 'surname', 'email', 'bot_key', 'bot_notify_settings'], 'string', 'max' => 255],
+            [['username', 'name', 'surname', 'email', 'bot_key', 'bot_notify_settings', 'fb_profile_url'], 'string', 'max' => 255],
         ];
     }
 
@@ -80,6 +83,7 @@ class UserDB extends \yii\db\ActiveRecord
             'bot_key' => 'Bot Key',
             'bot_user_id' => 'Bot User ID',
             'bot_notify_settings' => 'Bot Notify Settings',
+            'fb_profile_url' => 'Fb Profile Url',
         ];
     }
 
@@ -87,6 +91,14 @@ class UserDB extends \yii\db\ActiveRecord
      * @return \yii\db\ActiveQuery
      */
     public function getTickets()
+    {
+        return $this->hasMany(Ticket::className(), ['author_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTickets0()
     {
         return $this->hasMany(Ticket::className(), ['performer_id' => 'id']);
     }
@@ -97,5 +109,13 @@ class UserDB extends \yii\db\ActiveRecord
     public function getTicketComments()
     {
         return $this->hasMany(TicketComment::className(), ['author_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUserMessages()
+    {
+        return $this->hasMany(UserMessage::className(), ['author_id' => 'id']);
     }
 }

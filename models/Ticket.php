@@ -2,64 +2,39 @@
 
 namespace app\models;
 
+use app\helpers\Constants;
 use app\helpers\Help;
 use Yii;
 use yii\base\Exception;
 use yii\web\UploadedFile;
 
-/**
- * This is the model class for table "ticket".
- *
- * @property integer $id
- * @property integer $performer_id
- * @property integer $status_id
- * @property integer $type_id
- * @property integer $category_id
- * @property string $author_name
- * @property string $text
- * @property string $phone_or_email
- * @property string $link
- * @property string $log
- * @property string $created_at
- * @property string $updated_at
- * @property integer $created_by_id
- * @property integer $updated_by_id
- *
- * @property User $performer
- * @property TicketComment[] $ticketComments
- * @property TicketImage[] $ticketImages
- */
-class Ticket extends \yii\db\ActiveRecord
+
+class Ticket extends TicketDB
 {
+
+    const SCENARIO_APPEND = 'append';
+
     /**
      * @var UploadedFile[]
      */
     public $files = [];
 
     /**
-     * @inheritdoc
+     * @var null|string
      */
-    public static function tableName()
-    {
-        return 'ticket';
-    }
+    public $appended_text = null;
 
     /**
      * @inheritdoc
      */
     public function rules()
     {
-        return [
-            [['performer_id', 'status_id', 'type_id', 'category_id', 'created_by_id', 'updated_by_id'], 'integer'],
-            [['text', 'link', 'log'], 'string'],
-            [['created_at', 'updated_at'], 'safe'],
-            [['author_name','phone_or_email'], 'string', 'max' => 255],
-            [['performer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['performer_id' => 'id']],
-
-            [['link'],'url'],
-            [['text', 'author_name'], 'required', 'message' => 'Поле обязательно для заполнения'],
-            [['files'], 'each', 'rule' => ['file', 'extensions' => ['png', 'jpg', 'gif'], 'maxSize' => 1024*1024*2]]
-        ];
+        $baseRules = parent::rules();
+        $baseRules[] = [['files'], 'each', 'rule' => ['file', 'extensions' => ['png', 'jpg', 'gif'], 'maxSize' => 1024*1024*2]];
+        $baseRules[] = [['link'],'url'];
+        $baseRules[] = [['text'], 'required', 'message' => 'Поле обязательно для заполнения'];
+        $baseRules[] = [['appended_text'], 'required', 'message' => 'Поле обязательно для заполнения', 'on' => self::SCENARIO_APPEND];
+        return $baseRules;
     }
 
     /**
@@ -82,31 +57,35 @@ class Ticket extends \yii\db\ActiveRecord
             'updated_at' => 'Обновлен',
             'created_by_id' => 'Создан (кем)',
             'updated_by_id' => 'Обновлен (кем)',
+            'author_id' => 'Автор',
+            'appended_text' => 'Сообщение'
         ];
     }
 
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getPerformer()
+    public function getUserMessages()
     {
-        return $this->hasOne(User::className(), ['id' => 'performer_id']);
+        return parent::getUserMessages()->orderBy('created_at ASC');
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * Check if has opened admin question
+     * @return bool
      */
-    public function getTicketComments()
+    public function hasOpenedQuestion()
     {
-        return $this->hasMany(TicketComment::className(), ['ticket_id' => 'id'])->orderBy('created_at ASC');
-    }
+        if($this->status_id == Constants::STATUS_DONE){
+            return false;
+        }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTicketImages()
-    {
-        return $this->hasMany(TicketImage::className(), ['ticket_id' => 'id']);
+        $messages = $this->userMessages;
+        if(!empty($messages) && $messages[count($messages)-1]->author->role_id == Constants::ROLE_ADMIN){
+            return true;
+        }
+
+        return false;
     }
 
     /**

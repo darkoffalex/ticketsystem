@@ -7,10 +7,12 @@ use app\models\Ticket;
 use app\models\TicketComment;
 use app\models\TicketSearch;
 use app\models\User;
+use app\models\UserMessage;
 use Yii;
 use yii\base\Model;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Url;
+use yii\swiftmailer\Message;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -109,6 +111,45 @@ class TicketsController extends Controller
         }
 
         return $this->renderPartial('_comments',compact('model'));
+    }
+
+    /**
+     * User messages
+     * @param null $id
+     * @return string
+     * @throws NotFoundHttpException
+     */
+    public function actionMessages($id = null)
+    {
+        /* @var $user User */
+        $user = User::findOne(['id' => Yii::$app->user->id]);
+
+        $ticket = Ticket::findOne((int)$id);
+
+        if(empty($ticket)){
+            throw new NotFoundHttpException('Not found', 404);
+        }
+
+        $model = new UserMessage();
+        if(Yii::$app->request->isPost && $model->load(Yii::$app->request->post())){
+            $model->author_id = Yii::$app->user->id;
+            $model->ticket_id = $ticket->id;
+            $model->created_at = date('Y-m-d H:i:s',time());
+            $model->created_by_id = Yii::$app->user->id;
+            $model->updated_at = date('Y-m-d H:i:s',time());
+            $model->updated_by_id = Yii::$app->user->id;
+
+            if($model->validate()){
+                if($model->save()){
+                    $ticket->appendToLog($user->getFullName()." оставил сообщение");
+                    User::sendBotNotifications($ticket,$user->getFullName()." оставил сообщение");
+                }
+            }
+        }
+
+        $messages = UserMessage::find()->where(['ticket_id' => $ticket->id])->all();
+
+        return $this->renderPartial('_messages',compact('ticket','messages','model'));
     }
 
     /**

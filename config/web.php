@@ -112,9 +112,9 @@ $config = [
 
                 '/' => 'site/index',
                 '<controller>' => '<controller>/index',
-                '<controller>/<action>' => '<controller>/<action>',
                 '<controller>/<action>/<id:\d+>' => '<controller>/<action>',
                 '<controller>/<action>/<id:\d+>/<status:\d+>' => '<controller>/<action>',
+                '<controller>/<action>' => '<controller>/<action>',
                 '<controller:\w+>/<action:\w+>/*' => '<controller>/<action>',
             ],
         ],

@@ -54,6 +54,7 @@ $user = Yii::$app->user->identity;
                     <a data-target=".modal" data-toggle="modal" href="<?= Url::to(['/admin/tickets/change-performer', 'id' => $model->id]); ?>" class="btn btn-primary btn-xs">Назначить</a>
                     <a data-confirm="Удалить тикет навсегда ?" href="<?= Url::to(['/admin/tickets/delete', 'id' => $model->id]); ?>" class="btn btn-primary btn-xs">Удалить</a>
                 <?php endif; ?>
+                <a href="<?= Url::to(['/admin/tickets/messages', 'id' => $model->id]); ?>" data-target=".modal" data-toggle="modal" class="btn btn-primary btn-xs">Переписка</a>
             </h3>
 
 

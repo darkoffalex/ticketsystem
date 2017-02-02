@@ -44,10 +44,36 @@ $user = Yii::$app->user->identity;
                 <?php endif; ?>
 
                 <?php $model->author_name = $user->name.' '.$user->surname; ?>
-                <?= $form->field($model, 'author_name'); ?>
-                <?= $form->field($model, 'phone_or_email'); ?>
+
+                <?= $form->field($model, 'author_id')->widget(Select2::classname(),[
+                    'initValueText' => !empty($model->author) ? $model->author->name.' '.$model->author->surname : '',
+                    'options' => ['placeholder' => 'Найти пользователя'],
+                    'language' => Yii::$app->language,
+                    'theme' => Select2::THEME_DEFAULT,
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 2,
+                        'language' => [
+                            'noResults' => new JsExpression("function () { return 'Нет результатов';}"),
+                            'searching' => new JsExpression("function () { return 'Поиск...'; }"),
+                            'inputTooShort' => new JsExpression("function(args) {return 'Впишите больше символов'}"),
+                            'errorLoading' => new JsExpression("function () { return 'Ожидание...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Url::to(['/admin/users/ajax-search', 'role' => Constants::ROLE_NEW]),
+                            'dataType' => 'json',
+                            'data' => new JsExpression('function(params) { return {q:params.term}; }')
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(user) { return user.text; }'),
+                        'templateSelection' => new JsExpression('function (user) { return user.text; }'),
+                    ],
+
+                ]); ?>
+
                 <?= $form->field($model, 'link')->textInput()->label('Ссылка на файл/комментарий с нарушением <a data-target=".modal" data-toggle="modal" href="'.Url::to(['/site/where-to-get']).'">(где взять?)</a>'); ?>
                 <?= $form->field($model, 'text')->textarea(); ?>
+
                 <?= $form->field($model, 'performer_id')->widget(Select2::className(),[
                     'initValueText' => !empty($model->performer) ? $model->performer->name.' '.$model->performer->surname : '',
                     'options' => ['placeholder' => 'Найти пользователя'],
@@ -63,7 +89,7 @@ $user = Yii::$app->user->identity;
                             'errorLoading' => new JsExpression("function () { return 'Ожидание...'; }"),
                         ],
                         'ajax' => [
-                            'url' => Url::to(['/admin/users/ajax-search']),
+                            'url' => Url::to(['/admin/users/ajax-search', 'role' => implode(',',[Constants::ROLE_ADMIN, Constants::ROLE_REDACTOR])]),
                             'dataType' => 'json',
                             'data' => new JsExpression('function(params) { return {q:params.term}; }')
                         ],

@@ -44,7 +44,7 @@ $controller = $this->context;
                 'errorLoading' => new JsExpression("function () { return 'Ожидание...'; }"),
             ],
             'ajax' => [
-                'url' => Url::to(['/admin/users/ajax-search']),
+                'url' => Url::to(['/admin/users/ajax-search', 'role' => implode(',',[Constants::ROLE_ADMIN, Constants::ROLE_REDACTOR])]),
                 'dataType' => 'json',
                 'data' => new JsExpression('function(params) { return {q:params.term}; }')
             ],

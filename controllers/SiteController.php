@@ -194,6 +194,7 @@ class SiteController extends Controller
                     'offer' => Url::to(['/offer']),
                     'comment' => Url::to(['/offer']),
                     'question' => Url::to(['/question']),
+                    'profile' => Url::to(['/profile/index'])
                 ];
 
                 //go to admin panel
@@ -240,9 +241,11 @@ class SiteController extends Controller
         if($model->load(Yii::$app->request->post())){
             $model->files = UploadedFile::getInstances($model,'files');
             $model->author_name = $user->name.' '.$user->surname;
+            $model->author_id = $user->id;
             $model->phone_or_email = $user->email;
             $model->category_id = $user->id;
             $model->updated_by_id = $user->id;
+            $model->created_by_id = $user->id;
 
             if($model->validate()){
                 $model->created_at = date('Y-m-d H:i:s',time());

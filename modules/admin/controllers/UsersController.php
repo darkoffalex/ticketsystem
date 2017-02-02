@@ -188,11 +188,12 @@ class UsersController extends Controller
 
     /**
      * Ajax search method for auto-complete fields
-     * @param null $q
-     * @param null $id
+     * @param null|int $q
+     * @param null|int $id
+     * @param null|int|array $role
      * @return array
      */
-    public function actionAjaxSearch($q = null, $id = null)
+    public function actionAjaxSearch($q = null, $id = null, $role = null)
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
@@ -204,12 +205,16 @@ class UsersController extends Controller
             $query = new Query();
             $query->select('id, name, surname, username')->from('user');
 
+            if(!empty($role)){
+                $query->andWhere(['role_id' => explode(',',$role)]);
+            }
+
             if(count($words) > 1){
-                $query->where(['like','name',$words[0]])
+                $query->andWhere(['like','name',$words[0]])
                     ->andWhere(['like','surname',$words[1]])
                     ->limit(20);
             }else{
-                $query->where(['like','name', $q])
+                $query->andWhere(['like','name', $q])
                     ->orWhere(['like','surname',$q])
                     ->orWhere(['like','username', $q])
                     ->limit(20);

@@ -48,5 +48,13 @@ $callback = Url::to(['/site/fb-login'],true);
             </div>
         </div>
 
+        <div class="row">
+            <div class="col-lg-3">
+                <h2>Личный кабинет</h2>
+                <p>Хотите видеть весь список оставленных вами жалоб, дополнить или оставить сообщение поддержке ? Вам сюда</p>
+                <p><a class="btn btn-default" href="<?= Url::to(['/profile/index']); ?>">Перейти в кабинет &raquo;</a></p>
+            </div>
+        </div>
+
     </div>
 </div>

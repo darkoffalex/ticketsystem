@@ -230,4 +230,13 @@ class User extends UserDB implements IdentityInterface
 
         return 'Вы не получаете уведмлений (бот подклюечен)';
     }
+
+    /**
+     * Name and surname in one string
+     * @return string
+     */
+    public function getFullName()
+    {
+        return $this->name.' '.$this->surname;
+    }
 }
