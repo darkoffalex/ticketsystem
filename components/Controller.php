@@ -2,10 +2,13 @@
 
 namespace app\components;
 
+use app\helpers\Help;
+use app\models\User;
 use yii\web\Controller as BaseController;
 use yii\base\Module;
 use yii\base\Action;
 use yii\web\NotFoundHttpException;
+use Yii;
 
 class Controller extends BaseController
 {
@@ -51,11 +54,38 @@ class Controller extends BaseController
      */
     public function beforeAction($action)
     {
-        if($action->id == 'bot-hook' || $action->id == 'bot-send'){
+        $disableCSRF = [
+            'bot/hook',
+            'site/fb-login'
+        ];
+
+        $c = $action->controller->id;
+        $a = $action->id;
+
+        if(in_array(($c.'/'.$a),$disableCSRF)){
             $this->enableCsrfValidation = false;
         }
 
-        //TODO: здесь код что будет выполняться пепед каждый действием
+        /* @var $user User */
+        $user = Yii::$app->user->identity;
+
+        //Update the last visit time
+        if(!empty($user)){
+            //online at
+            $user->online_at = date('Y-m-d H:i:s', time());
+
+            //generate unique bot key
+            if(empty($user->bot_key)){
+                $key = Help::rndstr(6,true);
+                while(User::find()->where(['bot_key' => $key])->count() > 0){
+                    $key = Help::rndstr(6,true);
+                }
+                $user->bot_key = $key;
+            }
+
+            $user->update();
+        }
+
         return parent::beforeAction($action);
     }
 }

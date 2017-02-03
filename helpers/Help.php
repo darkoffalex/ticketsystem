@@ -46,7 +46,7 @@ class Help
         return $result;
     }
 
-    /*** Pseudo-async cURL requests
+    /** Pseudo-async cURL requests
      * @param $urls
      * @return string
      */
@@ -89,6 +89,26 @@ class Help
         curl_multi_close($multi);
     }
 
+    /**
+     * If site redirects to some url - this will return this url
+     * @param $url
+     * @return null|string
+     */
+    public static function redirurl($url)
+    {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Linux x86_64; rv:21.0) Gecko/20100101 Firefox/21.0");
+        curl_exec($ch);
+
+        $response = curl_exec($ch);
+        preg_match_all('/^Location:(.*)$/mi', $response, $matches);
+        curl_close($ch);
+
+        return !empty($matches[1]) ? trim($matches[1][0]) : null;
+    }
 
     /**
      * Логирование в файл

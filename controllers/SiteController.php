@@ -50,80 +50,6 @@ class SiteController extends Controller
         Help::azsend($recipient,$message);
     }
 
-    /**
-     * Bot hook
-     * @param $command
-     * @param null $param
-     * @param null $sender
-     * @return string
-     * @throws \Exception
-     */
-    public function actionBotHook($command, $param = null, $sender = null)
-    {
-        if($command == 'bind'){
-            /* @var $user User */
-            $user = User::find()->where('bot_key = :key && bot_key IS NOT NULL',['key' => $param])->one();
-            if(!empty($user) && !empty($sender)){
-                $user->bot_user_id = $sender;
-                $user->bot_notify_settings = 'all';
-                $user->update();
-                return 'Бот был приявязан к пользователю тикет-системы под именем '.$user->name.' '.$user->surname;
-            }else{
-                return 'Возникла ошибка. Введен неверный ключ';
-            }
-        }elseif($command == 'get'){
-            /* @var $user User */
-            $user = User::find()->where('bot_user_id = :usr && bot_user_id IS NOT NULL',['usr' => $sender])->one();
-            if(!empty($user) && !empty($param)){
-                if($param == 'all'){
-                    $user->bot_notify_settings = 'all';
-                    $user->update();
-                    return 'Настройки успешно обновлены. Вы будете получать уведомления о всех тикатах';
-                }else{
-                    $ids = explode(',',$param);
-                    $names = [];
-                    $newIds = [];
-                    foreach($ids as $id){
-                        /* @var $u User */
-                        $u = User::find()->where(['id' => (int)$id])->one();
-                        if(!empty($u)){
-                            $names[] = $u->name.' '.$u->surname;
-                            $newIds[] = $u->id;
-                        }
-                    }
-                    if(!empty($ids)){
-                        $user->bot_notify_settings = implode(":",$newIds);
-                        $user->update();
-                        return 'Настройки успешно обновлены. Вы будете получать уведомения о тикетах назначенных пользователям : '.implode(', ',$names);
-                    }else{
-                        return 'Возникла ошибка. Ни один из указанных ID не был найден в базе тикет-системы.';
-                    }
-                }
-            }else{
-                return 'Возникла ошибка. Убедитесь что бот привязан к вашему аккаунту в тикет-стстеме';
-            }
-        }elseif($command == 'info'){
-            /* @var $user User */
-            $user = User::find()->where('bot_user_id = :usr && bot_user_id IS NOT NULL',['usr' => $sender])->one();
-            if(!empty($user)){
-                return $user->getBotConfig();
-            }else{
-                return 'Возникла ошибка. Убедитесь что бот привязан к вашему аккаунту в тикет-стстеме';
-            }
-        }elseif($command == 'unbind'){
-            /* @var $user User */
-            $user = User::find()->where('bot_user_id = :usr && bot_user_id IS NOT NULL',['usr' => $sender])->one();
-            if(!empty($user)){
-                $user->bot_user_id = '';
-                $user->update();
-                return 'Вы успешно отвязали бота от вашего аккаунта. Вы не будете получать уведомления';
-            }else{
-                return 'Возникла ошибка. Убедитесь что бот привязан к вашему аккаунту в тикет-стстеме';
-            }
-        }
-
-        return 'Возникла ошибка. Проверьте правильность команды';
-    }
 
     /**
      * Login with Facebook
@@ -141,7 +67,8 @@ class SiteController extends Controller
 
         try {
             $helper = $fb->getRedirectLoginHelper();
-            $accessToken = $helper->getAccessToken();
+            $redirectUrl = Url::to(['/site/fb-login','type'=> $type],true);
+            $accessToken = $helper->getAccessToken($redirectUrl);
         } catch(FacebookSDKException $e) {
             throw new NotAcceptableHttpException($e->getMessage(),'402');
         }
@@ -163,6 +90,7 @@ class SiteController extends Controller
                     //create user
                     $user = new User();
                     $user->fb_id = ArrayHelper::getValue($data,'id');
+                    $user->fb_profile_url = Help::redirurl("https://www.facebook.com/{$user->fb_id}/");
                     $user->email = ArrayHelper::getValue($data,'email');
                     $user->name = ArrayHelper::getValue($data,'first_name');
                     $user->surname = ArrayHelper::getValue($data,'last_name');
@@ -181,6 +109,7 @@ class SiteController extends Controller
                     $user->updated_at = date('Y-m-d H:i:s',time());
                     $user->updated_by_id = $user->id;
                     $user->online_at = date('Y-m-d H:i:s',time());
+                    $user->fb_profile_url = Help::redirurl("https://www.facebook.com/{$user->fb_id}/");
                     $user->update();
                 }
 
