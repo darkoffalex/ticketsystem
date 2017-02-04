@@ -59,7 +59,7 @@ $user = Yii::$app->user->identity;
 
 
             <div class="timeline-body">
-                <p><strong>Текст сообщения:</strong> <?= StringHelper::truncateWords($model->text,10); ?> &nbsp; <a class="text-sm" data-toggle="modal" data-target=".modal" href="<?= Url::to(['/admin/tickets/full-text', 'id' => $model->id]); ?>">(читать полностью)</a></p>
+                <p><strong>Текст сообщения:</strong> <?= StringHelper::truncateWords(strip_tags($model->text),10); ?> &nbsp; <a class="text-sm" data-toggle="modal" data-target=".modal" href="<?= Url::to(['/admin/tickets/full-text', 'id' => $model->id]); ?>">(читать полностью)</a></p>
                 <?php if(!empty($model->link)): ?>
                     <p><strong>Ссылка пользователя: <?= Html::a($model->link,$model->link,['target' => '_blank']); ?></strong></p>
                 <?php endif; ?>

@@ -41,7 +41,7 @@ class Help
      */
     public static function azsend($recipient,$message)
     {
-        $bot = new FbBotApp(Yii::$app->params['fb-adminizator-page-key']);
+        $bot = new FbBotApp(Yii::$app->params['messengerPageKey']);
         $result = $bot->send(new Message($recipient,$message));
         return $result;
     }

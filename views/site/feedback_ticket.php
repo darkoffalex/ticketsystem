@@ -3,6 +3,7 @@
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
 /* @var $model app\models\Ticket */
+/* @var $user \app\models\User */
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
@@ -12,6 +13,7 @@ use yii\helpers\Url;
 
 $this->title = 'Жалоба';
 $this->params['breadcrumbs'][] = $this->title;
+$user = Yii::$app->user->identity;
 ?>
 
 <style type="text/css">
@@ -43,6 +45,12 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="alert alert-success">
             Жалоба отправлена
         </div>
+        <?php if(empty($user->bot_user_id)): ?>
+            <p>Если вы хотите получать уведомления о статусах ваших запросов в службу поддержки “Единой сети РА”, а также иметь возможность не покидая Facebook ответить на уточняющие вопросы наших админов, [либо: а также предоставить админам возможность задавать вам уточняющие вопросы по вашим жалобам], скопируйте этот код <code><?= $user->bot_key; ?></code> и перейдите по ссылке <a href="https://www.facebook.com/RA-Support-1339996612739489/">https://www.facebook.com/RA-Support-1339996612739489/</a>, выберите “Отправить сообщение” и отправьте скопированный код странице “СП Единой сети РА”. После этого вы будете получать все уведомления, связанные с вашей заявкой в мессенджере Facebook</p>
+            <p>Осуществлять управление вашими заявками, отвечать на уточняющие вопросы вы сможете и из вашего <a href="<?= Url::to(['/profile/index']); ?>">личного кабинета</a></p>
+        <?php endif; ?>
+        <a class="btn btn-default" href="<?= Url::to(['/profile/index']); ?>">Перейти в кабинет &raquo;</a>
+        <a class="btn btn-default" href="<?= Url::to(['/complaint']); ?>">Еще одна заявка &raquo;</a>
     <?php else: ?>
         <div class="row">
             <div class="col-lg-12">

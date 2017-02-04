@@ -91,6 +91,10 @@ class TicketsController extends Controller
         $model->appendToLog('Взят в обработку пользователем - '.$user->name.' '.$user->surname);
         $model->update();
 
+        $user = $model->author;
+        $user->botSendMessage("Заявка № {$model->id} ({$model->getExcerpt(10)}) была взята в обработку");
+        $user->botEndDialog();
+
         User::sendBotNotifications($model,'взят в обработку пользователем - '.$user->name.' '.$user->surname);
 
         return $this->redirect(Yii::$app->request->referrer);
@@ -143,6 +147,12 @@ class TicketsController extends Controller
                 if($model->save()){
                     $ticket->appendToLog($user->getFullName()." оставил сообщение");
                     User::sendBotNotifications($ticket,$user->getFullName()." оставил сообщение");
+
+                    $user = $ticket->author;
+                    $user->botSendMessage("По заявке № {$model->ticket_id} ({$model->ticket->getExcerpt(10)}) пришел вопрос от поддержки : \n\n {$model->message}");
+                    $user->botEndDialog();
+                    $user->botInitDialogIfNeed();
+                    $user->botContinueDialog(null,Constants::BOT_NEED_ANSWER);
                 }
             }
         }
@@ -223,7 +233,11 @@ class TicketsController extends Controller
         $model->appendToLog($user->name.' '.$user->surname.' сменил статус на "'.$statuses[$status].'"');
         $model->update();
 
-        User::sendBotNotifications($model,',статус изменен пользователем '.$user->name.' '.$user->surname.' на "'.$statuses[$status].'"');
+        $user = $model->author;
+        $user->botSendMessage("Статус заявки № {$model->id} ({$model->getExcerpt(10)}) был сменен на {$statuses[$status]}");
+        $user->botEndDialog();
+
+        User::sendBotNotifications($model,',статус изменен пользователем '.$user->getFullName().' на "'.$statuses[$status].'"');
 
         if(Yii::$app->request->isAjax){
             return $this->actionTicketAjaxRefresh($model->id);
@@ -287,6 +301,10 @@ class TicketsController extends Controller
                         $model->status_id = Constants::STATUS_NEW;
                         $model->appendToLog($user->name.' '.$user->surname.' обнулил исполнителя');
                         User::sendBotNotifications($model,', исполнитель убран пользователем '.$user->name.' '.$user->surname);
+
+                        $user = $model->author;
+                        $user->botSendMessage("Заявка № {$model->id} ({$model->getExcerpt(10)}) снова открыта");
+                        $user->botEndDialog();
                     }
                     $model->update();
                 }

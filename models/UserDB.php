@@ -28,7 +28,10 @@ use Yii;
  * @property string $bot_user_id
  * @property string $bot_notify_settings
  * @property string $fb_profile_url
+ * @property integer $last_bot_message_type
+ * @property integer $last_bot_operable_ticket
  *
+ * @property BotDialogSession[] $botDialogSessions
  * @property Ticket[] $tickets
  * @property Ticket[] $tickets0
  * @property TicketComment[] $ticketComments
@@ -51,7 +54,7 @@ class UserDB extends \yii\db\ActiveRecord
     {
         return [
             [['fb_id', 'fb_avatar_url', 'auth_key', 'password_hash', 'password_reset_token', 'bot_user_id'], 'string'],
-            [['role_id', 'status_id', 'created_by_id', 'updated_by_id'], 'integer'],
+            [['role_id', 'status_id', 'created_by_id', 'updated_by_id', 'last_bot_message_type', 'last_bot_operable_ticket'], 'integer'],
             [['created_at', 'updated_at', 'online_at'], 'safe'],
             [['username', 'name', 'surname', 'email', 'bot_key', 'bot_notify_settings', 'fb_profile_url'], 'string', 'max' => 255],
         ];
@@ -84,7 +87,17 @@ class UserDB extends \yii\db\ActiveRecord
             'bot_user_id' => 'Bot User ID',
             'bot_notify_settings' => 'Bot Notify Settings',
             'fb_profile_url' => 'Fb Profile Url',
+            'last_bot_message_type' => 'Last Bot Message Type',
+            'last_bot_operable_ticket' => 'Last Bot Operable Ticket',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getBotDialogSessions()
+    {
+        return $this->hasMany(BotDialogSession::className(), ['user_id' => 'id']);
     }
 
     /**

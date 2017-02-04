@@ -9,6 +9,11 @@ use yii\helpers\Url;
 use yii\web\IdentityInterface;
 use app\helpers\Constants;
 
+/**
+ * Class User
+ * @property Ticket[] $ticketsOpen
+ * @package app\models
+ */
 class User extends UserDB implements IdentityInterface
 {
     public $password;
@@ -159,6 +164,37 @@ class User extends UserDB implements IdentityInterface
     }
 
     /**
+     * Get only opened tickets (created by this user)
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTicketsOpen()
+    {
+        return parent::getTickets()->where(['status_id' => Constants::STATUS_NEW])->orderBy('created_at ASC');
+    }
+
+    /**
+     * Returns just tickets which have opened questions to user
+     * @return Ticket[]
+     */
+    public function getTicketsAwaiting()
+    {
+        /* @var $undone Ticket[] */
+        $undone = Ticket::find()
+            ->with('userMessages')
+            ->where('status_id != :done AND author_id = :author',['done' => Constants::STATUS_DONE, 'author' => $this->id])
+            ->orderBy('created_at ASC')
+            ->all();
+
+        foreach($undone as $index => $ticket){
+            if(!$ticket->hasOpenedQuestion()){
+                unset($undone[$index]);
+            }
+        }
+
+        return array_values($undone);
+    }
+
+    /**
      * Returns URL path to user avatar
      * @return string
      */
@@ -177,9 +213,10 @@ class User extends UserDB implements IdentityInterface
         /* @var $ticket Ticket */
         $performerId = $ticket->performer_id;
 
-        $q = User::find()->where('bot_user_id IS NOT NULL && bot_notify_settings IS NOT NULL');
+        $q = User::find()->where('bot_user_id IS NOT NULL AND bot_notify_settings IS NOT NULL');
         if(!empty($performerId)){
-            $q->andWhere(['like','bot_notify_settings', (string)$performerId])->orWhere(['bot_notify_settings' => 'all']);
+            $q->andWhere(['like','bot_notify_settings', (string)$performerId])
+                ->orWhere('bot_notify_settings = :all AND bot_user_id IS NOT NULL',['all' => 'all']);
         }else{
             $q->andWhere(['bot_notify_settings' => 'all']);
         }
@@ -238,5 +275,125 @@ class User extends UserDB implements IdentityInterface
     public function getFullName()
     {
         return $this->name.' '.$this->surname;
+    }
+
+    /**
+     * Initialises dialog with bot
+     * @param $message
+     */
+    public function botInitDialogIfNeed($message = null)
+    {
+        if(BotDialogSession::find()->where(['user_id' => $this->id, 'user_msg_type' => Constants::BOT_SESSION_INIT])->count() == 0){
+            BotDialogSession::deleteAll(['user_id' => $this->id]);
+
+            $initialisation = new BotDialogSession();
+            $initialisation -> created_at = date('Y-m-d H:i:s',time());
+            $initialisation -> updated_at = date('Y-m-d H:i:s',time());
+            $initialisation -> life_time = 3600;
+            $initialisation -> user_msg_text = $message;
+            $initialisation -> user_msg_type = Constants::BOT_SESSION_INIT;
+            $initialisation -> user_id = $this->id;
+            $initialisation -> save();
+        }
+    }
+
+    /**
+     * Get init message (word from which the dialogue has begun)
+     * @return null|string
+     */
+    public function botGetInitMessage()
+    {
+        /* @var BotDialogSession $bds */
+        $bds = BotDialogSession::find()->where(['user_id' => $this->id, 'user_msg_type' => Constants::BOT_SESSION_INIT])->one();
+        return !empty($bds) ? $bds->user_msg_text : null;
+    }
+
+    /**
+     * Sets init message (word from which the dialogue has begun, for example if it was empty while init)
+     * @param $message
+     * @throws \Exception
+     */
+    public function botSetInitMessage($message)
+    {
+        /* @var BotDialogSession $bds */
+        $bds = BotDialogSession::find()->where(['user_id' => $this->id, 'user_msg_type' => Constants::BOT_SESSION_INIT])->one();
+        $bds -> user_msg_text = $message;
+        $bds -> updated_at = date('Y-m-d H:i:s',time());
+        $bds -> update();
+    }
+
+    /**
+     * Set selection of ticket in dialog story
+     * @param $id
+     * @param int $type
+     * @throws \Exception
+     */
+    public function botSetTicketSelection($id, $type = Constants::BOT_NEED_SELECT_TICKET)
+    {
+        /* @var BotDialogSession $bds */
+        $bds = BotDialogSession::find()->where(['user_id' => $this->id, 'user_msg_type' => $type])->one();
+        $bds -> operable_ticket_id = $id;
+        $bds -> updated_at = date('Y-m-d H:i:s',time());
+        $bds -> update();
+    }
+
+    /**
+     * Returns previously selected ticket id from dialog
+     * @param int $type
+     * @return int|null
+     */
+    public function botGetTicketSelection($type = Constants::BOT_NEED_SELECT_TICKET)
+    {
+        /* @var BotDialogSession $bds */
+        $bds = BotDialogSession::find()->where(['user_id' => $this->id, 'user_msg_type' => $type])->one();
+        return !empty($bds) ? $bds->operable_ticket_id : null;
+    }
+
+    /**
+     * Ends bot dialog
+     */
+    public function botEndDialog()
+    {
+        BotDialogSession::deleteAll(['user_id' => $this->id]);
+    }
+
+    /**
+     * Creates new item in bot-dialog session
+     * @param null $message
+     * @param $type
+     * @param null $ticketId
+     */
+    public function botContinueDialog($message = null, $type, $ticketId = null)
+    {
+        $asking = new BotDialogSession();
+        $asking -> created_at = date('Y-m-d H:i:s',time());
+        $asking -> updated_at = date('Y-m-d H:i:s',time());
+        $asking -> life_time = 3600;
+        $asking -> user_msg_text = $message;
+        $asking -> user_msg_type = $type;
+        $asking -> operable_ticket_id = $ticketId;
+        $asking -> user_id = $this->id;
+        $asking -> save();
+    }
+
+    /**
+     * Check what question asked bot last time
+     */
+    public function botLastDialogState()
+    {
+        /* @var $bds BotDialogSession */
+        $bds = BotDialogSession::find()->where(['user_id' => $this->id])->orderBy('id DESC')->one();
+        return $bds->user_msg_type;
+    }
+
+    /**
+     * Sends message as bot if user bind
+     * @param $message
+     */
+    public function botSendMessage($message)
+    {
+        if(!empty($this->bot_user_id)){
+            Help::azsend($this->bot_user_id,$message);
+        }
     }
 }

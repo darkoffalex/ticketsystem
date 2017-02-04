@@ -6,6 +6,7 @@ use app\helpers\Constants;
 use app\helpers\Help;
 use Yii;
 use yii\base\Exception;
+use yii\helpers\StringHelper;
 use yii\web\UploadedFile;
 
 
@@ -176,5 +177,15 @@ class Ticket extends TicketDB
         }
 
         return $result;
+    }
+
+    /**
+     * Returns firsts words of ticket's text
+     * @param int $length
+     * @return string
+     */
+    public function getExcerpt($length = 10)
+    {
+        return StringHelper::truncateWords(strip_tags($this->text),$length).'...';
     }
 }

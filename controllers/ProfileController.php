@@ -191,8 +191,11 @@ class ProfileController extends Controller
 
             if($model->validate()){
                 $model->save();
+                $ticket->appendToLog("Автор заявки добавил новое сообщение");
                 return $this->redirect(Yii::$app->request->referrer);
             }
+
+
         }
 
         return $this->renderAjax('_add_comment',compact('model','ticket'));
