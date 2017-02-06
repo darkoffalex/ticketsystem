@@ -39,17 +39,15 @@ dmstr\web\AdminLteAsset::register($this);
                         $a = Yii::$app->controller->action->id;
                         $c = Yii::$app->controller->id;
                         NavBar::begin([
-                            'brandLabel' => $this->title,
+                            'brandLabel' => 'ЛК',
                             'brandUrl' => Url::to(['/profile/index'])
                         ]);
                         echo Nav::widget([
                             'items' => [
                                 ['label' => 'Мои заявки', 'url' => ['/profile/my-tickets'], 'active' => in_array($a,['index','my-tickets'])],
                                 ['label' => 'Параметры', 'url' => ['/profile/settings'], 'active' => $a == 'settings'],
-                                ['label' => 'Выйти', 'items' => [
-                                    ['label' => 'Выход', 'url' => ['/site/logout']],
-                                    ['label' => 'Главная', 'url' => ['/site/index']]
-                                ]],
+                                ['label' => 'Выйти', 'url' => ['/site/logout']],
+                                ['label' => 'Главная', 'url' => ['/site/index']]
                             ],
                             'options' => ['class' => 'navbar-nav'],
                         ]);

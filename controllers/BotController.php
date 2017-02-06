@@ -65,7 +65,7 @@ class BotController extends Controller
                         $user = User::find()->where(['bot_user_id' => $senderId])->one();
 
                         //default response
-                        $response = "Это бот поддержки бла-бла введите код для привязки бла-бла";
+                        $response = "Привет! Это Messenger службы поддержки \"Единой сети РА\". Введите код привязки. Вы можете найти его по ссылке: https://ctc.gl/profile/settings раздел Параметры";
 
                         //if user not bind and code entered
                         if(empty($user) && is_numeric($command)){
@@ -78,7 +78,7 @@ class BotController extends Controller
 
                                 if($user->role_id == Constants::ROLE_NEW){
                                     $response = "Вы привязали аккаунт к пользовлателю {$user->getFullName()} \n";
-                                    $response .= "У вас права обычного пользователя. Вы можете получать уведомления о заявках, отвечать на вопросы поддержки, дополнять заявки";
+                                    $response .= "Теперь вы можете получать уведомления о заявках, отвечать на вопросы поддержки, дополнять заявки";
                                 }else{
                                     $response = "Вы привязали аккаунт к пользовлателю {$user->getFullName()} \n";
                                     $response .= "У вас права редактора/админа. Вы можете настроить уведомления, получать уведомления о всех заявка системы либо только о заявках какого-то конкретного пользователя";
@@ -94,7 +94,7 @@ class BotController extends Controller
                                 if($command == 'unbind'){
                                     $user->bot_user_id = null;
                                     $user->update();
-                                    $response = "Вы успешно отвязали бота от вашего аккаунта. Вы не будете получать уведомления";
+                                    $response = "Вы успешно отвязали Messenger от вашего аккаунта. Вы не будете получать уведомления";
                                 //if wants to talk
                                 }elseif(!empty($command) || $command == '0'){
 
@@ -105,7 +105,7 @@ class BotController extends Controller
                                     if(empty($opened) && empty($awaitingAnswers)){
                                         $link = Url::to(['/site/complaint'],true);
                                         $response = "На данный момент у вас нет открытых заявок или вопросов от поддержки. Чтобы создать заявку пройдите по ссылке - {$link} \n\n";
-                                        $response .= "Чтобы отвязать бота от вашего аккаунта и больше не получать уведомления напишите unbind";
+                                        $response .= "Чтобы отвязать Messenger от вашего аккаунта и больше не получать уведомления напишите unbind";
                                         $user->botEndDialog();
                                     //if has some opened tickets
                                     }else{
@@ -202,7 +202,7 @@ class BotController extends Controller
                                                     $response.= "2 - нет \n";
                                                     $user->botContinueDialog(null,Constants::BOT_NEED_CONFIRM_ANSWER);
                                                 }else{
-                                                    $response = "Упс! Похоже пока вы думали все заявки ожидающие ответа были закрыты были закрыты!";
+                                                    $response = "Упс! Похоже пока вы думали все заявки ожидающие ответа были закрыты!";
                                                     $user->botEndDialog();
                                                 }
                                             }elseif($user->botLastDialogState() == Constants::BOT_NEED_CONFIRM_ANSWER){
@@ -235,6 +235,8 @@ class BotController extends Controller
 
                                                         $ticket->appendToLog("Автор заявки добавил новое сообщение");
 
+                                                        $ticket->performer->botSendMessage("Автор заявки №{$ticket->id} ответил на вопрос поддержки");
+
                                                         if(count($awaitingAnswers) > 1){
                                                             $response = "Ответ был успешно добавлен! Вы можете ответить на оставшиеся вопросы поддержки.";
                                                             $user->botEndDialog();
@@ -245,6 +247,7 @@ class BotController extends Controller
                                                             $user->botEndDialog();
                                                         }
                                                     }else{
+                                                        //Такое почти невозможно, но все же..
                                                         $response = "Упс! Похоже пока вы думали все заявки ожидающие ответа были закрыты были закрыты!";
                                                         $user->botEndDialog();
                                                     }
@@ -272,7 +275,7 @@ class BotController extends Controller
                                         if($param == 'all'){
                                             $user->bot_notify_settings = 'all';
                                             $user->update();
-                                            $response = "Настройки успешно обновлены. Вы будете получать уведомления о всех тикатах";
+                                            $response = "Настройки успешно обновлены. Вы будете получать уведомления обо всех заявках";
                                         }elseif(!empty($param)){
                                             $ids = explode(',',$param);
                                             $idsChecked = [];
@@ -285,12 +288,12 @@ class BotController extends Controller
                                                     $idsChecked[] = $u->id;
                                                 }
                                                 $user->bot_notify_settings = implode(":",$idsChecked);
-                                                $response = "Настройки успешно обновлены. Вы будете получать уведомения о тикетах назначенных пользователям : ".implode(', ',$names);
+                                                $response = "Настройки успешно обновлены. Вы будете получать уведомения о заявках, назначенных пользователям : ".implode(', ',$names);
                                             }else{
-                                                $response = "Возникла ошибка. Ни один из указанных ID не был найден в базе тикет-системы.";
+                                                $response = "Возникла ошибка. Ни один из указанных ID не был найден в базе системы обратной связи.";
                                             }
                                         }else{
-                                            $response = "Возникла ошибка. Убедитесь что бот привязан к вашему аккаунту в тикет-стстеме";
+                                            $response = "Возникла ошибка. Убедитесь что Messenger привязан к вашему аккаунту в системе обратной связи";
                                         }
                                         break;
 
@@ -301,14 +304,14 @@ class BotController extends Controller
                                     case 'unbind':
                                         $user->bot_user_id = null;
                                         $user->update();
-                                        $response = "Вы успешно отвязали бота от вашего аккаунта. Вы не будете получать уведомления";
+                                        $response = "Вы успешно отвязали Messenger от вашего аккаунта. Вы не будете получать уведомления";
                                         break;
 
                                     default:
                                         $response = "Судя по всему вы ввели не верную команду. Список доступных команд для администраторов/редакторов : \n\n";
-                                        $response .= "get [all|1|2,3,4] - настроить уведомления. all - получать о всех тикетах, или же тикетах конерктных пользователей. \n\n";
+                                        $response .= "get [all|1|2,3,4] - настроить уведомления. all - получать обо всех заявках, или же о заявках конкретных пользователей. \n\n";
                                         $response .= "info - просмотреть текущие настройки оповещений \n\n";
-                                        $response .= "unbind - отвязать бота от аккаунта. Не получать более уведомлений о тикетах.";
+                                        $response .= "unbind - отвязать Messenger от аккаунта. Не получать более уведомлений о заявках.";
                                         break;
                                 }
                             }

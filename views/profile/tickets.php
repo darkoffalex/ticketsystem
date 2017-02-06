@@ -47,9 +47,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                     <?php endif; ?>
 
                                     <div class="tools">
-                                        <a class="fa fa-eye" href="<?= Url::to(['/profile/show-ticket','id' => $ticket->id]) ?>"></a>
+                                        <a href="<?= Url::to(['/profile/show-ticket','id' => $ticket->id]) ?>">Посмотреть запрос</a>
                                         <?php if($ticket->status_id == Constants::STATUS_NEW): ?>
-                                            <a data-confirm="Вы действительно хотите удалить вашу заявку ?" class="fa fa-trash-o" href="<?= Url::to(['/profile/delete-ticket','id' => $ticket->id]) ?>"></a>
+                                            | <a data-confirm="Вы действительно хотите удалить вашу заявку ?" href="<?= Url::to(['/profile/delete-ticket','id' => $ticket->id]) ?>">Удалить запрос</a>
                                         <?php endif; ?>
                                     </div>
 

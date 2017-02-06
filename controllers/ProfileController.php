@@ -190,8 +190,18 @@ class ProfileController extends Controller
             $model->updated_by_id = Yii::$app->user->id;
 
             if($model->validate()){
+                $waitedForAnswer = $ticket->hasOpenedQuestion();
                 $model->save();
                 $ticket->appendToLog("Автор заявки добавил новое сообщение");
+
+                if(!empty($ticket->performer)){
+                    if(!$waitedForAnswer){
+                        $ticket->performer->botSendMessage("Автор заявки №{$ticket->id} добавил новое сообщение");
+                    }else{
+                        $ticket->performer->botSendMessage("Автор заявки №{$ticket->id} ответил на вопрос поддержки");
+                    }
+                }
+
                 return $this->redirect(Yii::$app->request->referrer);
             }
 

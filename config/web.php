@@ -104,9 +104,13 @@ $config = [
                 'admin/<controller>/<action>' => 'admin/<controller>/<action>',
 
                 'complaint' => 'site/complaint',
+                'c' => 'site/complaint',
                 'offer' => 'site/offer',
+                'o' => 'site/offer',
                 'comment' => 'site/comment',
+                'k' => 'site/comment',
                 'question' => 'site/question',
+                'q' => 'site/question',
 
                 '/' => 'site/index',
                 '<controller>' => '<controller>/index',

@@ -28,7 +28,7 @@ $user = Yii::$app->user->identity;
             <h3 class="timeline-header">
                 <strong>ID:<?= $model->id; ?></strong>
                 &nbsp;|&nbsp;
-                Автор: <?= $model->author_name; ?>
+                Автор: <a target="_blank" href="<?= !empty($model->author->fb_profile_url) ? $model->author->fb_profile_url : ''; ?>"><?= $model->author_name; ?></a>
                 &nbsp;|&nbsp;
                 <?php if($model->status_id == Constants::STATUS_NEW): ?>
                     <span class="label label-danger">Новый</span>

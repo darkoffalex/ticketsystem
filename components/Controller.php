@@ -4,6 +4,7 @@ namespace app\components;
 
 use app\helpers\Help;
 use app\models\User;
+use yii\helpers\Url;
 use yii\web\Controller as BaseController;
 use yii\base\Module;
 use yii\base\Action;
@@ -28,13 +29,13 @@ class Controller extends BaseController
         $this->view->registerMetaTag(['name' => 'keywords', 'content' => ""]);
 
         //open-graph мета-теги
-        $this->view->registerMetaTag(['property' => 'og:description', 'content' => ""]);
-        $this->view->registerMetaTag(['property' => 'og:url', 'content' => ""]);
-        $this->view->registerMetaTag(['property' => 'og:site_name', 'content' => ""]);
-        $this->view->registerMetaTag(['property' => 'og:title', 'content' => ""]);
-        $this->view->registerMetaTag(['property' => 'og:image', 'content' => ""]);
-        $this->view->registerMetaTag(['property' => 'og:image:width', 'content' => '200']);
-        $this->view->registerMetaTag(['property' => 'og:image:height', 'content' => '200']);
+//        $this->view->registerMetaTag(['property' => 'og:description', 'content' => ""]);
+//        $this->view->registerMetaTag(['property' => 'og:url', 'content' => ""]);
+//        $this->view->registerMetaTag(['property' => 'og:site_name', 'content' => ""]);
+//        $this->view->registerMetaTag(['property' => 'og:title', 'content' => ""]);
+//        $this->view->registerMetaTag(['property' => 'og:image', 'content' => ""]);
+//        $this->view->registerMetaTag(['property' => 'og:image:width', 'content' => '200']);
+//        $this->view->registerMetaTag(['property' => 'og:image:height', 'content' => '200']);
 
         //временная зона
         date_default_timezone_set('Europe/Moscow');
@@ -84,6 +85,25 @@ class Controller extends BaseController
             }
 
             $user->update();
+        }
+
+        $this->view->registerMetaTag(['property' => 'og:url', 'content' => Url::current([],true)]);
+        $this->view->registerMetaTag(['property' => 'og:image', 'content' => "http://1.ctc.gl/os1.png"]);
+        $this->view->registerMetaTag(['property' => 'og:image:width', 'content' => '475']);
+        $this->view->registerMetaTag(['property' => 'og:image:height', 'content' => '250']);
+
+        if($action->id == 'complaint'){
+            $this->view->registerMetaTag(['property' => 'og:description', 'content' => "Заполните форму жалобы за 30 секунд и наблюдайте за ходом ее рассмотрения прямо в Messenger!"]);
+            $this->view->registerMetaTag(['property' => 'og:title', 'content' => "Пожаловаться администрации РА"]);
+        }elseif($action->id == 'offer'){
+            $this->view->registerMetaTag(['property' => 'og:description', 'content' => "У вас идея или отличное предложение для Единой сети РА? Напишите нам!"]);
+            $this->view->registerMetaTag(['property' => 'og:title', 'content' => "Предложение администрации РА"]);
+        }elseif($action->id == 'comment'){
+            $this->view->registerMetaTag(['property' => 'og:description', 'content' => "Ваши добрые слова дают нам стимул, а замечания - помогают стать лучше!"]);
+            $this->view->registerMetaTag(['property' => 'og:title', 'content' => "Оставьте отзыв о Единой сети РА!"]);
+        }elseif($action->id == 'question'){
+            $this->view->registerMetaTag(['property' => 'og:description', 'content' => "Задайте любой интересующий вопрос администрации Единой сети РА. Ваш вопрос будет переадресован наиболее компетентному сотруднику и он обязательно ответит вам!"]);
+            $this->view->registerMetaTag(['property' => 'og:title', 'content' => "Задайте свой вопрос администрации РА!"]);
         }
 
         return parent::beforeAction($action);
