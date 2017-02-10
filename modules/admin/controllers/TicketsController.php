@@ -88,14 +88,14 @@ class TicketsController extends Controller
         $model->performer_id = Yii::$app->user->id;
         $model->updated_by_id = Yii::$app->user->id;
         $model->updated_at = date('Y-m-d H:i:s',time());
-        $model->appendToLog('Взят в обработку пользователем - '.$user->name.' '.$user->surname);
+        $model->appendToLog('Взят в обработку пользователем - '.$user->getFullName());
         $model->update();
 
-        $user = $model->author;
-        $user->botSendMessage("Заявка № {$model->id} ({$model->getExcerpt(10)}) была взята в обработку");
-        $user->botEndDialog();
+        $author = $model->author;
+        $author->botSendMessage("Заявка № {$model->id} ({$model->getExcerpt(10)}) была взята в обработку");
+        $author->botEndDialog();
 
-        User::sendBotNotifications($model,'взят в обработку пользователем - '.$user->name.' '.$user->surname);
+        User::sendBotNotifications($model,'взята в обработку пользователем - '.$user->getFullName());
 
         return $this->redirect(Yii::$app->request->referrer);
     }
@@ -148,11 +148,11 @@ class TicketsController extends Controller
                     $ticket->appendToLog($user->getFullName()." оставил сообщение");
                     User::sendBotNotifications($ticket,$user->getFullName()." оставил сообщение");
 
-                    $user = $ticket->author;
-                    $user->botSendMessage("По заявке № {$model->ticket_id} ({$model->ticket->getExcerpt(10)}) пришел вопрос от поддержки : \n\n {$model->message}");
-                    $user->botEndDialog();
-                    $user->botInitDialogIfNeed();
-                    $user->botContinueDialog(null,Constants::BOT_NEED_ANSWER);
+                    $author = $ticket->author;
+                    $author->botSendMessage("По заявке № {$model->ticket_id} ({$model->ticket->getExcerpt(10)}) пришел вопрос от поддержки : \n\n {$model->message}");
+                    $author->botEndDialog();
+                    $author->botInitDialogIfNeed();
+                    $author->botContinueDialog(null,Constants::BOT_NEED_ANSWER);
                 }
             }
         }
@@ -189,12 +189,12 @@ class TicketsController extends Controller
             $ok = $model->save();
 
             if($ok){
-                $ticket->appendToLog($model->author->name.' '.$model->author->surname.' добавил комментарий');
+                $ticket->appendToLog($model->author->getFullName().' добавил комментарий');
                 $model->updated_by_id = Yii::$app->user->id;
                 $model->updated_at = date('Y-m-d H:i:s',time());
                 $ticket->update();
 
-                User::sendBotNotifications($ticket,'прокомментирован пользователем - '.$model->author->name.' '.$model->author->surname);
+                User::sendBotNotifications($ticket,'прокомментирована пользователем - '.$model->author->getFullName());
             }
 
             return 'OK';
@@ -230,7 +230,7 @@ class TicketsController extends Controller
 
         $model->status_id = $status;
         $model->updated_at = date('Y-m-d H:i:s', time());
-        $model->appendToLog($user->name.' '.$user->surname.' сменил статус на "'.$statuses[$status].'"');
+        $model->appendToLog($user->getFullName().' сменил статус на "'.$statuses[$status].'"');
         $model->update();
 
         $user = $model->author;
@@ -294,13 +294,13 @@ class TicketsController extends Controller
                         if($oldStatus == Constants::STATUS_DONE || $oldStatus == Constants::STATUS_NEW){
                             $model->status_id = Constants::STATUS_IN_PROGRESS;
                         }
-                        $model->appendToLog($user->name.' '.$user->surname.' дилегировал тикет '.$model->performer->name.' '.$model->performer->surname);
-                        User::sendBotNotifications($model,'делегирован пользователем '.$user->name.' '.$user->surname.' на '.$model->performer->name.' '.$model->performer->surname);
+                        $model->appendToLog($user->getFullName().' дилегировал заявку '.$model->performer->getFullName());
+                        User::sendBotNotifications($model,'делегирована пользователем '.$user->getFullName().' на '.$model->performer->getFullName());
                     }
                     else{
                         $model->status_id = Constants::STATUS_NEW;
-                        $model->appendToLog($user->name.' '.$user->surname.' обнулил исполнителя');
-                        User::sendBotNotifications($model,', исполнитель убран пользователем '.$user->name.' '.$user->surname);
+                        $model->appendToLog($user->getFullName().' обнулил исполнителя');
+                        User::sendBotNotifications($model,', исполнитель убран пользователем '.$user->getFullName());
 
                         $user = $model->author;
                         $user->botSendMessage("Заявка № {$model->id} ({$model->getExcerpt(10)}) снова открыта");
@@ -341,9 +341,10 @@ class TicketsController extends Controller
                 $model->updated_at = date('Y-m-d H:i:s',time());
                 $model->created_by_id = Yii::$app->user->id;
                 $model->updated_by_id = Yii::$app->user->id;
+                $model->author_id = Yii::$app->user->id;
                 $model->status_id = Constants::STATUS_NEW;
-                $model->appendToLog('Создан тикет');
-                User::sendBotNotifications($model,'создан пользователем '.$user->name.' '.$user->surname);
+                $model->appendToLog('Создана заявка');
+                User::sendBotNotifications($model,'создана пользователем '.$user->getFullName());
                 $saved = $model->save();
 
                 if($saved){
@@ -351,8 +352,8 @@ class TicketsController extends Controller
 
                     if(!empty($model->performer)){
                         $model->status_id = Constants::STATUS_IN_PROGRESS;
-                        $model->appendToLog($user->name.' '.$user->surname.' создал тикет для '.$model->performer->name.' '.$model->performer->surname);
-                        User::sendBotNotifications($model,'создан пользователем '.$user->name.' '.$user->surname.' и назначен на '.$model->performer->name.' '.$model->performer->surname);
+                        $model->appendToLog($user->getFullName().' создал заявку для '.$model->performer->getFullName());
+                        User::sendBotNotifications($model,'создана пользователем '.$user->getFullName().' и назначена на '.$model->performer->getFullName());
                         $model->files = null;
                         $model->update();
                     }

@@ -61,7 +61,7 @@ class TicketImage extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'ticket_id' => 'Тикет',
+            'ticket_id' => 'Заявка',
             'name' => 'Название',
             'filename' => 'Имя файла',
             'original_filename' => 'Орининаьное имя файла',

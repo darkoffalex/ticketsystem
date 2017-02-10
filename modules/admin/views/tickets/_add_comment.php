@@ -14,7 +14,7 @@ $controller = $this->context;
 ?>
 
 <div class="modal-header">
-    <h4 class="modal-title">Добавление комментария к тикету №<?= $ticket->id; ?></h4>
+    <h4 class="modal-title">Добавление комментария к заявке №<?= $ticket->id; ?></h4>
 </div>
 
 <?php $form = ActiveForm::begin([

@@ -14,7 +14,7 @@ $controller = $this->context;
 ?>
 
 <div class="modal-header">
-    <h4 class="modal-title">Добавление сообщения к тикету №<?= $ticket->id; ?></h4>
+    <h4 class="modal-title">Добавление сообщения к обращению №<?= $ticket->id; ?></h4>
 </div>
 
 <?php $form = ActiveForm::begin([

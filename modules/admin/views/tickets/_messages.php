@@ -15,7 +15,7 @@ $controller = $this->context;
 ?>
 
 <div class="modal-header">
-    <h4 class="modal-title">Переписка с пользователем создавшим тикет №<?= $ticket->id; ?></h4>
+    <h4 class="modal-title">Переписка с пользователем создавшим заявку №<?= $ticket->id; ?></h4>
 </div>
 
 <div class="modal-body box-comments" style="max-height: 500px; overflow-y: scroll;">
@@ -31,7 +31,7 @@ $controller = $this->context;
         <?php endforeach; ?>
     <?php else: ?>
         <div class="box-comment">
-            <p>У тикета пока что нет сообщений</p>
+            <p>У заявки пока что нет сообщений</p>
         </div>
     <?php endif; ?>
 </div>

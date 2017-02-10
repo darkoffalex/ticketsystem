@@ -19,7 +19,7 @@ $controller = $this->context;
 $user = Yii::$app->user->identity;
 $view = $this;
 
-$this->title = 'Список тикетов';
+$this->title = 'Список заявок';
 $this->params['breadcrumbs'][] = $this->title;
 
 $gridColumns = [

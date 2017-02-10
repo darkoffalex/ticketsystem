@@ -35,7 +35,7 @@ $user = Yii::$app->user->identity;
 
     <div class="row">
         <div class="col-lg-12">
-            <img class="img-responsive img-rounded" src="<?= Url::to('@web/img/form_pic.jpg'); ?>">
+            <img class="img-responsive img-rounded" src="<?= Url::to('@web/img/form_pic.png'); ?>">
         </div>
     </div>
     
@@ -81,7 +81,7 @@ $user = Yii::$app->user->identity;
                 </div>
                 <hr>
 
-                <?= $form->field($model, 'link')->textInput()->label('Ссылка на файл/комментарий с нарушением <a data-target=".modal" data-toggle="modal" href="'.Url::to(['/site/where-to-get']).'">(где взять?)</a>'); ?>
+                <?= $form->field($model, 'link')->textInput()->label('Ссылка на пост/комментарий с нарушением <a data-target=".modal" data-toggle="modal" href="'.Url::to(['/site/where-to-get']).'">(где взять?)</a>'); ?>
                 <?= $form->field($model, 'text')->textarea(); ?>
 
                 <hr>

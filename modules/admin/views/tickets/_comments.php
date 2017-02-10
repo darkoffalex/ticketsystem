@@ -13,7 +13,7 @@ $controller = $this->context;
 ?>
 
 <div class="modal-header">
-    <h4 class="modal-title">Просмотр комментариев тикета №<?= $model->id; ?></h4>
+    <h4 class="modal-title">Просмотр комментариев заявки №<?= $model->id; ?></h4>
 </div>
 
 <div class="modal-body box-comments" style="max-height: 500px; overflow-y: scroll;">
@@ -30,7 +30,7 @@ $controller = $this->context;
         <?php endforeach; ?>
     <?php else: ?>
         <div class="box-comment">
-            <p>У тикета пока что нет комментариев</p>
+            <p>У заявки пока что нет комментариев</p>
         </div>
     <?php endif; ?>
 

@@ -180,11 +180,11 @@ class SiteController extends Controller
                 $model->created_at = date('Y-m-d H:i:s',time());
                 $model->updated_at = date('Y-m-d H:i:s',time());
                 $model->status_id = Constants::STATUS_NEW;
-                $model->appendToLog('Создан тикет');
+                $model->appendToLog('Заявка создана');
                 $saved = $model->save();
 
                 if($saved){
-                    User::sendBotNotifications($model,'создан');
+                    User::sendBotNotifications($model,'создана');
                     $model->createFilesFromUploaded();
                 }
 

@@ -51,7 +51,7 @@ class TicketComment extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'ticket_id' => 'Тикет',
+            'ticket_id' => 'Заявка',
             'author_id' => 'Автор',
             'text' => 'Текст',
             'created_at' => 'Создан',

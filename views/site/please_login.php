@@ -27,7 +27,7 @@ $callback = Url::to(['/site/fb-login', 'type' => $type],true);
         <div class="col-lg-12">
 
             <div class="alert alert-danger">
-                Вы не авторизировались. Пожалуйста авторизируйтесь через Facebook бла-бла-ба.
+                Вы не авторизировались. Пожалуйста авторизируйтесь через Facebook, нажав на кнопку авторизации.
             </div>
 
             <?php if(Yii::$app->user->isGuest): ?>

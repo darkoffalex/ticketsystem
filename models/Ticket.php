@@ -82,7 +82,7 @@ class Ticket extends TicketDB
         }
 
         $messages = $this->userMessages;
-        if(!empty($messages) && $messages[count($messages)-1]->author->role_id == Constants::ROLE_ADMIN){
+        if(!empty($messages) && in_array($messages[count($messages)-1]->author->role_id,[Constants::ROLE_ADMIN,Constants::ROLE_REDACTOR])){
             return true;
         }
 

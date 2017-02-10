@@ -40,7 +40,7 @@
                     ],
 
                     [
-                        'label' => 'Тикеты',
+                        'label' => 'Заявки',
                         'icon' => 'fa fa-ticket',
                         'active' => $c == 'tickets',
                         'visible' => true,

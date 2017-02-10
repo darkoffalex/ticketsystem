@@ -46,8 +46,8 @@ dmstr\web\AdminLteAsset::register($this);
                             'items' => [
                                 ['label' => 'Мои заявки', 'url' => ['/profile/my-tickets'], 'active' => in_array($a,['index','my-tickets'])],
                                 ['label' => 'Параметры', 'url' => ['/profile/settings'], 'active' => $a == 'settings'],
-                                ['label' => 'Выйти', 'url' => ['/site/logout']],
-                                ['label' => 'Главная', 'url' => ['/site/index']]
+                                ['label' => 'На главную', 'url' => ['/site/index']],
+                                ['label' => 'Выйти', 'url' => ['/site/logout']]
                             ],
                             'options' => ['class' => 'navbar-nav'],
                         ]);

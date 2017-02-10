@@ -181,12 +181,12 @@ class User extends UserDB implements IdentityInterface
         /* @var $undone Ticket[] */
         $undone = Ticket::find()
             ->with('userMessages')
-            ->where('status_id != :done AND author_id = :author',['done' => Constants::STATUS_DONE, 'author' => $this->id])
+            ->where(['author_id' => $this->id])
             ->orderBy('created_at ASC')
             ->all();
 
         foreach($undone as $index => $ticket){
-            if(!$ticket->hasOpenedQuestion()){
+            if($ticket->hasOpenedQuestion() == false){
                 unset($undone[$index]);
             }
         }
@@ -221,7 +221,7 @@ class User extends UserDB implements IdentityInterface
             $q->andWhere(['bot_notify_settings' => 'all']);
         }
 
-        $message='Тикет No'. $ticket->id.'.('.Url::to(['/admin/tickets','id' => $ticket->id],true).') '.$message;
+        $message='Заявка No'. $ticket->id.'.('.Url::to(['/admin/tickets/index','id' => $ticket->id],true).') '.$message;
 
         /* @var $recipients User[] */
         $recipients = $q->all();
@@ -249,7 +249,7 @@ class User extends UserDB implements IdentityInterface
         $settings = explode(':',$this->bot_notify_settings);
 
         if(in_array('all',$settings)){
-            return 'Вы получаете уведомления о всех тикетах';
+            return 'Вы получаете уведомления о всех заявках';
         }
 
         $result = [];
@@ -262,7 +262,7 @@ class User extends UserDB implements IdentityInterface
         }
 
         if(!empty($result)){
-            return 'Вы получаете уведомления о тикетах пользователей : '.implode(', ',$result);
+            return 'Вы получаете уведомления о заявках пользователей : '.implode(', ',$result);
         }
 
         return 'Вы не получаете уведмлений (бот подклюечен)';

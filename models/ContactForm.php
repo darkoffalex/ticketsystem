@@ -112,8 +112,14 @@ class ContactForm extends Model
      */
     public function contact()
     {
+        $email = $this->getFirstAdminEmail();
+
+        if(empty($email)){
+            return false;
+        }
+
         $composed = Yii::$app->mailer->compose()
-            ->setTo($this->getFirstAdminEmail())
+            ->setTo($email)
             ->setFrom([Yii::$app->params['adminEmail'] => $this->name])
             ->setSubject($this->getSubject())
             ->setTextBody($this->getBody());

@@ -9,7 +9,7 @@ $controller = $this->context;
 ?>
 
 <div class="modal-header">
-    <h4 class="modal-title">Добавить к сообщению тикета №<?= $model->id; ?></h4>
+    <h4 class="modal-title">Добавить к сообщению обращения №<?= $model->id; ?></h4>
 </div>
 
 <?php $form = ActiveForm::begin([

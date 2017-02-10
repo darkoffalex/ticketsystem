@@ -25,7 +25,7 @@ class UserMessage extends UserMessageDB
             'id' => 'ID',
             'message' => 'Сообщение',
             'author_id' => 'Автор',
-            'ticket_id' => 'Тикет',
+            'ticket_id' => 'Заявка',
             'created_at' => 'Создан',
             'updated_at' => 'Обновлен',
             'created_by_id' => 'Создан (кем)',

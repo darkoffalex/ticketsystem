@@ -52,7 +52,7 @@ $user = Yii::$app->user->identity;
                 <?php if($user->role_id == Constants::ROLE_ADMIN): ?>
                     &nbsp;|&nbsp;
                     <a data-target=".modal" data-toggle="modal" href="<?= Url::to(['/admin/tickets/change-performer', 'id' => $model->id]); ?>" class="btn btn-primary btn-xs">Назначить</a>
-                    <a data-confirm="Удалить тикет навсегда ?" href="<?= Url::to(['/admin/tickets/delete', 'id' => $model->id]); ?>" class="btn btn-primary btn-xs">Удалить</a>
+                    <a data-confirm="Удалить заявку навсегда ?" href="<?= Url::to(['/admin/tickets/delete', 'id' => $model->id]); ?>" class="btn btn-primary btn-xs">Удалить</a>
                 <?php endif; ?>
                 <a href="<?= Url::to(['/admin/tickets/messages', 'id' => $model->id]); ?>" data-target=".modal" data-toggle="modal" class="btn btn-primary btn-xs">Переписка</a>
             </h3>
@@ -98,7 +98,7 @@ $user = Yii::$app->user->identity;
 
             <div class="timeline-footer">
                 <hr>
-                <h4>Лог тикета:</h4>
+                <h4>Лог заяки:</h4>
                 <p><?= $model->getLogAsString("<br>",3); ?></p>
                 <a href="<?= Url::to(['/admin/tickets/full-log', 'id' => $model->id]); ?>" data-target=".modal" data-toggle="modal" class="btn btn-primary btn-xs">Смотреть весь лог</a>
             </div>

@@ -6,7 +6,7 @@ use yii\helpers\Url;
 /* @var $controller \app\controllers\SiteController */
 /* @var $user \yii\web\User */
 
-$this->title = 'Главная страница сайта';
+$this->title = 'Система обратной связи "Единой сети РА"';
 $controller = $this->context;
 $user = Yii::$app->user->identity;
 
@@ -19,8 +19,8 @@ $callback = Url::to(['/site/fb-login'],true);
 <div class="site-index">
 
     <div class="jumbotron">
-        <h1>Система обращений в администрацию<br>"Единой сети РА"</h1>
-        <p class="lead">Выберите что вам нужно</p>
+        <h1>Система обратной связи с администрацией<br>"Единой сети РА"</h1>
+        <p class="lead">С чем вы хотели бы обратиться к нам?<br>Выберите наиболее подходящий вариант ниже<br>или войдите в личный кабинет для<br>работы с вашими заявками.</p>
     </div>
 
     <div class="body-content">
@@ -51,7 +51,7 @@ $callback = Url::to(['/site/fb-login'],true);
         <div class="row">
             <div class="col-lg-3">
                 <h2>Личный кабинет</h2>
-                <p>Хотите видеть весь список оставленных вами жалоб, дополнить или оставить сообщение поддержке ? Вам сюда</p>
+                <p>Хотите видеть весь список оставленных вами жалоб, их статус, дополнить их или оставить сообщение поддержке? Вам сюда</p>
                 <p><a class="btn btn-default" href="<?= Url::to(['/profile/index']); ?>">Перейти в кабинет &raquo;</a></p>
             </div>
         </div>

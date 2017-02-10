@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="row">
         <div class="col-lg-12">
-            <img class="img-responsive img-rounded" src="<?= Url::to('@web/img/form_pic.jpg'); ?>">
+            <img class="img-responsive img-rounded" src="<?= Url::to('@web/img/form_pic.png'); ?>">
         </div>
     </div>
 
@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php if(Yii::$app->session->hasFlash('contactFormSubmitted')): ?>
         <div class="alert alert-success">
-            Сообщение отправлено
+            Ваше сообщение отправлено. В ближайшие минуты оно будет переадресовано сотруднику, который наиболее компетентен в вопросе, которого вы коснулись в вашем сообщении и, если ваш вопрос требует ответа, обязательно ответит вам по E-mail.
         </div>
     <?php else: ?>
         <div class="row">

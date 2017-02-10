@@ -15,7 +15,7 @@ $controller = $this->context;
 ?>
 
 <div class="modal-header">
-    <h4 class="modal-title">Делегировать тикет №<?= $model->id; ?></h4>
+    <h4 class="modal-title">Делегировать заявку №<?= $model->id; ?></h4>
 </div>
 
 <?php $form = ActiveForm::begin([

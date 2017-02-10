@@ -8,14 +8,14 @@ use app\helpers\Constants;
 use kartik\select2\Select2;
 use yii\web\JsExpression;
 
-$this->title = $model->isNewRecord ? 'Создать тикет' : 'Обновить тикет';
+/* @var $model \app\models\Ticket */
+/* @var $user \app\models\User */
+
+$this->title = $model->isNewRecord ? 'Создать заявку' : 'Обновить заявку';
 $this->params['breadcrumbs'][] = ['label' => 'Список пользователей', 'url' => Url::to(['/admin/users/index'])];
 $this->params['breadcrumbs'][] = $this->title;
 
 $user = Yii::$app->user->identity;
-
-/* @var $model \app\models\Ticket */
-/* @var $user \app\models\User */
 ?>
 
 <div class="row">

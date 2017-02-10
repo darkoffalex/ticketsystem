@@ -3,8 +3,8 @@
 $params = require(__DIR__ . '/params.php');
 
 $config = [
-    'id' => 'Тикет Система',
-    'name' => 'Тикет Система',
+    'id' => 'Система обратной связи',
+    'name' => 'Система обратной связи',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log','devicedetect','thumbnail'],
     'language' => 'ru',
@@ -99,8 +99,8 @@ $config = [
             'showScriptName' => false,
             'rules' => [
                 'admin' => 'admin/main/index',
-                'admin/<controller>' => 'admin/<controller>/index',
                 'admin/<controller>/<action>/<id:\d+>' => 'admin/<controller>/<action>',
+                'admin/<controller>' => 'admin/<controller>/index',
                 'admin/<controller>/<action>' => 'admin/<controller>/<action>',
 
                 'complaint' => 'site/complaint',
